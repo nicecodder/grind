@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grind - Lock In Your Habits</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ONBOARDING OVERLAY (REPURPOSED AS SPLASH SCREEN) -->
+  <div class="onboarding-overlay" id="onboarding-overlay">
+    <div class="onboarding-phone-frame splash-frame">
+      <div class="splash-content">
+        <div class="splash-logo-container">
+          <!-- Premium glowing cube logo -->
+          <svg class="splash-cube-icon" viewBox="0 0 24 24" width="72" height="72">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="none" stroke="var(--accent-yellow)" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="var(--accent-yellow)" stroke-width="2.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="splash-title">GRIND</h1>
+        <p class="splash-subtitle">LOCK IN YOUR HABITS</p>
+        
+        <div class="splash-loading-container">
+          <div class="splash-loading-bar">
+            <div class="splash-loading-fill" id="splash-loading-fill" style="width: 0%"></div>
+          </div>
+          <div class="splash-loading-text" id="splash-loading-text">Starting session...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <div class="phone-frame">
+      <!-- Status Bar / Notch simulation -->
+      <div class="phone-notch"></div>
+      
+      <!-- App Header (shared among main screens) -->
+      <header class="app-header" id="main-header">
+        <div class="header-logo-container">
+          <!-- Logo image -->
+          <div class="logo-icon">
+            <img src="logo.png" alt="Grind Logo" style="height: 32px; width: auto; object-fit: contain;">
+          </div>
+          <span class="header-title">Grind</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="header-signin-btn" id="header-signin-btn" onclick="openSignInModal()">Sign In</button>
+          <button class="settings-btn" id="settings-btn" aria-label="Settings">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW 1: HOME (Habit dashboard) -->
+      <main class="view-content active" id="home-view">
+        <!-- Upgrade Banner (shown for free users) -->
+        <div class="upgrade-banner" id="upgrade-banner" onclick="openSubscriptionModal()">
+          <div class="upgrade-banner-left">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ebd45b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span class="upgrade-text">Upgrade to <strong>Grind Pro</strong> — Remove ads, unlimited tasks & more</span>
+          </div>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ebd45b" stroke-width="2.5"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+
+        <div class="home-title-row">
+          <div class="home-brand">
+            <!-- 3D Cube Icon -->
+            <svg class="cube-icon" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <span class="brand-text">GRIND</span>
+          </div>
+          <!-- Rank Badge (Bronze Pentagon) -->
+          <div class="rank-badge-header" id="home-rank-badge">
+            <img id="home-rank-badge-img" src="badges/bronze.png" alt="Rank Badge" class="rank-badge-img" />
+          </div>
+        </div>
+
+        <!-- Streak Widget -->
+        <div class="streak-card card">
+          <div class="streak-content">
+            <img src="Icons/fire_emoji.png" alt="Fire Streak" class="fire-streak-img" />
+            <span class="streak-text"><span id="streak-days-count">0</span> Days Locked In</span>
+          </div>
+        </div>
+
+        <!-- Rewarded Ad Card (shown for free users if not watched today) -->
+        <div class="rewarded-ad-card card" id="rewarded-ad-home-card" style="display: none; cursor: pointer;" onclick="showRewardedAd()">
+          <div class="rewarded-ad-content" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <div class="rewarded-ad-left" style="display: flex; align-items: center; gap: 10px;">
+              <span class="rewarded-ad-emoji" style="font-size: 1.5rem;">📺</span>
+              <div class="rewarded-ad-text" style="display: flex; flex-direction: column;">
+                <span class="rewarded-ad-title" style="font-weight: 700; font-size: 0.85rem; color: #fff;">1.5x EXP Boost Today</span>
+                <span class="rewarded-ad-sub" style="font-size: 0.72rem; color: var(--color-text-secondary);">Watch a short ad to multiply all task rewards</span>
+              </div>
+            </div>
+            <button class="rewarded-ad-btn" style="background: var(--accent-yellow); color: #000; font-weight: 700; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; transition: var(--transition-fast);">Watch</button>
+          </div>
+        </div>
+
+        <!-- Grid widgets for habits (2x2) -->
+        <div class="habits-grid">
+          <!-- Water card: Blue, active click -->
+          <div class="habit-card water-card active-card" id="water-habit">
+            <div class="habit-header">
+              <span class="habit-title">Water</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" class="arrow-right">
+                <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="habit-progress-line">
+              <div class="progress-bar-fill" id="water-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="habit-value">
+              <span class="current-val" id="water-count">0</span><span class="target-val">/8</span>
+            </div>
+            <div class="habit-subtitle">Tap to add glass</div>
+            <div class="habit-icon-corner water-drop">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Gym card -->
+          <div class="habit-card gym-card" id="gym-habit">
+            <div class="habit-header">
+              <span class="habit-title">Gym</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" class="arrow-right">
+                <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="habit-progress-line">
+              <div class="progress-bar-fill" id="gym-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="gym-status-text" id="gym-status">Not started</div>
+            <div class="habit-value">
+              <span class="current-val" id="gym-duration">0</span><span class="unit-val"> mins</span>
+            </div>
+            <div class="habit-subtitle">Target: 45 mins</div>
+            <div class="habit-icon-corner gym-dumbbell">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                <path d="M6.5 5h11a1.5 1.5 0 0 1 0 3h-1.08c-.46 1.39-1.68 2.4-3.17 2.4h-2.5c-1.49 0-2.71-1.01-3.17-2.4H6.5a1.5 1.5 0 0 1 0-3zm0 11h11a1.5 1.5 0 0 1 0 3h-1.08c-.46-1.39-1.68-2.4-3.17-2.4h-2.5c-1.49 0-2.71 1.01-3.17 2.4H6.5a1.5 1.5 0 0 1 0-3zM5 8v8h14V8H5z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Studies card -->
+          <div class="habit-card studies-card" id="study-habit">
+            <div class="habit-header">
+              <span class="habit-title">Studies</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" class="arrow-right">
+                <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="habit-progress-line">
+              <div class="progress-bar-fill" id="study-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="habit-value">
+              <span class="current-val" id="study-hours">0.0</span><span class="unit-val"> hrs</span>
+            </div>
+            <div class="habit-subtitle">of 4 hrs</div>
+            <div class="habit-icon-corner studies-book">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Sleep card -->
+          <div class="habit-card sleep-card" id="sleep-habit">
+            <div class="habit-header">
+              <span class="habit-title">Sleep</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" class="arrow-right">
+                <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="habit-progress-line">
+              <div class="progress-bar-fill" id="sleep-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="habit-value">
+              <span class="current-val" id="sleep-hours">--</span><span class="unit-val"> hrs</span>
+            </div>
+            <div class="habit-subtitle">Target: 8 hrs</div>
+            <div class="habit-icon-corner sleep-moon">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Steps Tracker Card (Gyro sensor linked) -->
+        <div class="steps-tracker-card card" id="steps-card">
+          <div class="steps-header">
+            <div class="steps-title-group">
+              <span class="steps-card-title">Daily Steps</span>
+              <span class="sensor-status-badge" id="sensor-status">Watch Disconnected</span>
+            </div>
+            <div class="steps-action-group">
+              <button class="sensor-sync-btn" id="btn-sync-sensor" title="Sync Watch Sensor">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+                <span>Sync</span>
+              </button>
+            </div>
+          </div>
+          <div class="steps-body">
+            <div class="steps-stats-row">
+              <div class="steps-count-display">
+                <span class="steps-number" id="steps-count">0</span>
+                <span class="steps-target">/ 10,000 steps</span>
+              </div>
+              <div class="steps-simulation-controls">
+                <button class="sim-walk-btn" id="btn-sim-walk" title="Simulate 1,000 steps">Walk 1k</button>
+              </div>
+            </div>
+            <div class="steps-progress-line">
+              <div class="steps-bar-fill" id="steps-progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="steps-footer">
+              <span class="steps-sub">Gyroscope tracking active when synced</span>
+              <span class="steps-xp-hint">+10 XP per 1,000 steps</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Grind Tasks Checklist -->
+        <div class="tasks-section card" id="home-tasks-card">
+          <div class="tasks-header">
+            <div class="tasks-title-group">
+              <svg class="tasks-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent-yellow)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span class="tasks-heading">Daily Grind Tasks</span>
+            </div>
+            <span class="tasks-count-pill" id="tasks-count-text">0 / 4 completed</span>
+          </div>
+
+          <div class="tasks-list" id="home-tasks-list">
+            <!-- Dynamic task items populated via JS -->
+          </div>
+
+          <!-- Add custom task form -->
+          <div class="add-task-row" style="display: flex; gap: 6px;">
+            <select id="select-task-category" class="task-category-select" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; border-radius: var(--border-radius-md); padding: 8px; font-size: 0.8rem; outline: none; cursor: pointer; max-width: 90px;">
+              <option value="fitness">Fitness 🏋️</option>
+              <option value="study">Study 🧠</option>
+              <option value="work">Work 💼</option>
+            </select>
+            <input type="text" id="input-task-name" placeholder="Add custom daily task..." maxlength="40" style="flex: 1;">
+            <button class="add-task-btn" id="btn-add-task" aria-label="Add Task">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard-section card" id="home-leaderboard-card" style="cursor: pointer;">
+          <div class="leaderboard-header">
+            <div class="leaderboard-title-group">
+              <svg class="trophy-icon" viewBox="0 0 24 24" width="20" height="20">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6v5zm12 0h1.5a2.5 2.5 0 0 0 0-5H18v5z" fill="none" stroke="#ebd45b" stroke-width="2"/>
+                <path d="M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" fill="none" stroke="#ebd45b" stroke-width="2"/>
+                <path d="M12 2a6 6 0 0 0-6 6v3c0 2.5 1.84 4.5 4.5 4.9V2h3v13.9c2.66-.4 4.5-2.4 4.5-4.9V8a6 6 0 0 0-6-6z" fill="#ebd45b" opacity="0.9"/>
+              </svg>
+              <span class="leaderboard-heading">XP Leaderboard</span>
+            </div>
+            <span class="arena-tag">WEEKLY ARENA</span>
+          </div>
+
+          <div class="leaderboard-list" id="home-leaderboard-list">
+            <!-- Dynamic 10 rows populated via JS -->
+          </div>
+        </div>
+      </main>
+
+      <!-- VIEW 2: WORKOUT (Schedule) -->
+      <main class="view-content" id="workout-view">
+        <div class="workout-header">
+          <span class="current-date" id="current-date">TUESDAY, JUNE 2</span>
+          <h1 class="workout-quote">"Success isn't always about greatness. It's about consistency. ⚡"</h1>
+        </div>
+
+        <!-- Today's Schedule Card -->
+        <div class="schedule-card card">
+          <span class="schedule-label">TODAY'S SCHEDULE</span>
+          <h2 class="schedule-title" id="schedule-title">Tuesday — Pull</h2>
+          <span class="schedule-focus" id="schedule-focus">Back, Biceps, Rear Delts</span>
+        </div>
+
+        <!-- Interactive Workout Section -->
+        <div class="exercises-section" id="workout-interactive-section">
+          <!-- Dynamic workout contents loaded from JavaScript -->
+        </div>
+      </main>
+
+      <!-- VIEW 3: SCANNER (AI Body Scanner) -->
+      <main class="view-content" id="scanner-view">
+        <div class="scanner-header">
+          <span class="scanner-label">PHYSIQUE ANALYSIS</span>
+          <h1 class="scanner-title">AI Body Scanner</h1>
+          <p class="scanner-description">Get an instant AI-powered physique assessment, symmetry ratings, and community ranking.</p>
+        </div>
+
+        <!-- Scanner Visual Grid Box -->
+        <div class="scanner-container card">
+          <div class="scanner-grid-bg">
+            <!-- Grid overlay via CSS background -->
+            <div class="scan-laser-line" id="scan-laser"></div>
+            <!-- Brackets -->
+            <div class="corner-bracket top-left"></div>
+            <div class="corner-bracket top-right"></div>
+            <div class="corner-bracket bottom-left"></div>
+            <div class="corner-bracket bottom-right"></div>
+            
+            <!-- Logo inside scanner: Walking figure in a circle -->
+            <div class="scanner-overlay-center" id="scanner-status-visual">
+              <div class="walking-logo-circle">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="currentColor">
+                  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="45, 15"/>
+                  <path d="M13.5 5.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM11 9.5l-1.5 3.5H8v1h2l1-2.5 1.5 1v3.5h1v-4l-2-1.5 1-2z" transform="scale(1.2) translate(-2, -2)"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Scan result text display overlays -->
+            <div class="scan-overlay-result" id="scan-result-panel" style="display: none;">
+              <h2 class="result-preset-name" id="result-preset">Shredded Aesthetic</h2>
+              <div class="result-stats">
+                <div class="r-stat">
+                  <span class="r-label">SYMMETRY</span>
+                  <span class="r-val" id="result-symmetry">94.8%</span>
+                </div>
+                <div class="r-stat">
+                  <span class="r-label">PHYSIQUE RATING</span>
+                  <span class="r-val" id="result-rating">A+ Excellent</span>
+                </div>
+                <div class="r-stat">
+                  <span class="r-label">GLOBAL RANK</span>
+                  <span class="r-val" id="result-rank">Top 1.2%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="scanner-actions">
+          <button class="scanner-btn outline-btn" id="camera-scan-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            Live Camera Scan
+          </button>
+          <button class="scanner-btn filled-btn" id="simulate-scan-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Simulate Scan
+          </button>
+        </div>
+
+        <!-- Presets Selection -->
+        <div class="presets-section">
+          <span class="section-title">1. CHOOSE PHYSICAL PRESET (TEST AI)</span>
+          <div class="presets-grid">
+            <div class="preset-card active-preset" data-preset="shredded">
+              <h3 class="preset-name">Shredded Aesthetic</h3>
+              <span class="preset-desc">Extremely lean, ripped core</span>
+            </div>
+            <div class="preset-card" data-preset="bulk">
+              <h3 class="preset-name">Titan Bulk</h3>
+              <span class="preset-desc">Heavy muscle mass, size</span>
+            </div>
+            <div class="preset-card" data-preset="lean">
+              <h3 class="preset-name">Lean Athletic</h3>
+              <span class="preset-desc">Proportionate, low body fat</span>
+            </div>
+            <div class="preset-card" data-preset="beginner">
+              <h3 class="preset-name">Gym Beginner</h3>
+              <span class="preset-desc">Starting phase, base shape</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- VIEW 4: PROFILE (Athlete Settings) -->
+      <main class="view-content" id="profile-view">
+        <div class="profile-header">
+          <!-- Avatar container with upload edit -->
+          <div class="avatar-container" id="avatar-container">
+            <div class="avatar-circle">
+              <svg viewBox="0 0 24 24" width="60" height="60" fill="currentColor" class="default-avatar-icon" id="user-avatar-svg">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              <img id="user-avatar-img" src="" alt="User Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+            </div>
+            <div class="avatar-edit-badge">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+            </div>
+          </div>
+          <h1 class="profile-name" id="profile-display-name">Athlete</h1>
+          <span class="profile-sub">GRINDER • JOINED 2024</span>
+        </div>
+
+        <!-- Three stat columns -->
+        <div class="profile-stats-grid">
+          <div class="stat-column">
+            <span class="stat-num" id="stat-streak">0</span>
+            <span class="stat-label">STREAK</span>
+          </div>
+          <div class="stat-column">
+            <span class="stat-num" id="stat-xp">0</span>
+            <span class="stat-label">TOTAL XP</span>
+          </div>
+          <div class="stat-column">
+            <span class="stat-num" id="stat-prs">0</span>
+            <span class="stat-label">PRs</span>
+          </div>
+        </div>
+
+        <!-- Account Section -->
+        <div class="settings-group">
+          <span class="group-title">Account</span>
+          
+          <div class="settings-item" id="btn-personal-info">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="item-name">Personal Information</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+          <div class="settings-item">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span class="item-name">Email & Security</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+          <!-- Admin Control Panel (Visible only to admin role) -->
+          <div class="settings-item" id="btn-admin-dashboard" style="display: none;" onclick="window.location.href='/admin.html'">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--accent-yellow)" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="9" x2="15" y2="9"></line>
+                <line x1="9" y1="13" x2="15" y2="13"></line>
+                <line x1="9" y1="17" x2="13" y2="17"></line>
+              </svg>
+              <span class="item-name" style="color: var(--accent-yellow); font-weight: 700;">Admin Control Panel</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent-yellow)" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+          <div class="settings-item" id="btn-subscription">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12" y2="18"></line>
+              </svg>
+              <span class="item-name">Subscription Plan</span>
+            </div>
+            <div class="item-right-content">
+              <span class="pro-tag" id="profile-sub-tag">FREE</span>
+              <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Premium Streak Shields -->
+          <div class="settings-item" id="btn-streak-shields" style="display: none;">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span class="item-name">Streak Shields</span>
+            </div>
+            <div class="item-right-content">
+              <span class="setting-value-text" id="shields-val-text">0 Active</span>
+              <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Weekly EXP & Habits Report -->
+          <div class="settings-item" id="btn-weekly-report" style="display: none;">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+              </svg>
+              <span class="item-name">Weekly Habits & EXP Report</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+          <!-- Elite Customization -->
+          <div class="settings-item" id="btn-elite-customization" style="display: none;">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+              </svg>
+              <span class="item-name">Elite Profile Settings</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+          <!-- Monthly Elite Challenges -->
+          <div class="settings-item" id="btn-elite-challenges" style="display: none;">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <span class="item-name">Elite challenges</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Preferences Section -->
+        <div class="settings-group">
+          <span class="group-title">Preferences</span>
+          
+          <div class="settings-item" id="btn-units">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="10" rx="2" ry="2"></rect>
+                <line x1="6" y1="12" x2="18" y2="12"></line>
+              </svg>
+              <span class="item-name">Units of Measure</span>
+            </div>
+            <div class="item-right-content">
+              <span class="setting-value-text" id="units-val-text">Metric (kg, km)</span>
+              <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="settings-item" id="btn-theme">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span class="item-name">App Theme</span>
+            </div>
+            <div class="item-right-content">
+              <span class="setting-value-text" id="theme-val-text">Deep Black</span>
+              <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="settings-item" id="btn-workout-plan">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span class="item-name">Workout Split</span>
+            </div>
+            <div class="item-right-content">
+              <span class="setting-value-text" id="workout-plan-val-text">5 Days / Week</span>
+              <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- More Section -->
+        <div class="settings-group">
+          <span class="group-title">More</span>
+          
+          <div class="settings-item" id="btn-notifications-setting">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 01-3.46 0"></path>
+              </svg>
+              <span class="item-name">Notifications</span>
+            </div>
+            <div class="item-right-content">
+              <span class="setting-value-text" id="notif-val-text">Enabled</span>
+              <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="settings-item" id="btn-privacy" onclick="openLegalModal('privacy-policy-modal')">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span class="item-name">Privacy Policy</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+          <div class="settings-item" id="btn-terms" onclick="openLegalModal('terms-conditions-modal')">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span class="item-name">Terms & Conditions</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+
+
+          <div class="settings-item sign-out-item" id="btn-sign-out">
+            <div class="item-left">
+              <svg class="item-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span class="item-name">Sign Out</span>
+            </div>
+            <svg class="item-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+      </main>
+
+      <!-- VIEW 5: ACHIEVEMENTS / MY REWARDS (Opened via Home Rank Click or Back arrow) -->
+      <main class="view-content" id="achievements-view">
+        <!-- Rewards Header Navigation -->
+        <div class="rewards-nav-bar-new">
+          <div class="rewards-nav-logo-group">
+            <div class="green-logo-square">
+              <img src="logo.png" alt="Grind Logo" style="width: 18px; height: 18px; object-fit: contain;">
+            </div>
+            <span class="rewards-nav-brand-text">Grind</span>
+          </div>
+          <button class="rewards-settings-btn" id="rewards-settings-btn" aria-label="Settings">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="rewards-back-link-row">
+          <button class="back-profile-btn" id="rewards-back-btn">
+            ← Back to Profile
+          </button>
+        </div>
+
+        <div class="rewards-header-row-new">
+          <h1 class="rewards-main-title">My rewards</h1>
+          <button class="help-btn-new" id="achievements-help-btn" aria-label="Help">
+            ?
+          </button>
+        </div>
+
+        <!-- Rank Stats Card -->
+        <div class="rank-status-card card">
+          <div class="rank-status-left">
+            <div class="large-rank-badge">
+              <div class="badge-glow" id="large-rank-badge-glow"></div>
+              <img id="large-rank-badge-img" src="badges/bronze.png" alt="Large Rank Badge" class="large-rank-badge-img" />
+            </div>
+          </div>
+          <div class="rank-status-right">
+            <span class="rank-tier-pill">CURRENT TIER RANK</span>
+            <h2 class="rank-tier-title" id="reward-rank-title">BRONZE 1 GRINDER</h2>
+            <p class="rank-tier-desc" id="reward-rank-desc">Rookie Grinder. Just starting the journey.</p>
+            
+            <div class="rank-xp-bar-container">
+              <div class="rank-xp-fill" id="reward-rank-xp-fill" style="width: 0%;"></div>
+            </div>
+            <div class="rank-xp-texts">
+              <span class="xp-needed" id="reward-rank-xp-text">0 / 1,500 XP to next rank</span>
+              <span class="next-rank-label">Next: <span class="next-rank-name">Silver</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tab Pills -->
+        <div class="rewards-filters-container">
+          <div class="rewards-filters" id="rewards-filters-scroll">
+            <button class="filter-pill active-filter" data-filter="all">All</button>
+            <button class="filter-pill" data-filter="workout">Workout 🏋️</button>
+            <button class="filter-pill" data-filter="study">Study 🧠</button>
+            <button class="filter-pill" data-filter="sleep">Sleep 😴</button>
+            <button class="filter-pill" data-filter="water">Water 💧</button>
+            <button class="filter-pill" data-filter="special">Special ⚡</button>
+            <div class="filter-underline" id="filter-underline"></div>
+          </div>
+        </div>
+
+        <!-- Achievements Scroll List -->
+        <div class="achievements-scroll-list" id="achievements-list">
+          <!-- Dynamic achievements populated via JS -->
+        </div>
+
+
+      </main>
+
+      <!-- VIEW 6: FULL LEADERBOARD (Opened via Home Leaderboard click) -->
+      <main class="view-content" id="leaderboard-view" style="padding-top: 15px;">
+        <!-- Leaderboard Header navigation matching 1st image -->
+        <div class="leaderboard-header-row">
+          <div class="leaderboard-header-left">
+            <button class="back-arrow-btn" id="leaderboard-back-btn" aria-label="Back to Home">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <h1 class="leaderboard-main-title">Leaderboard</h1>
+          </div>
+          <div class="leaderboard-header-right">
+            <button class="header-icon-btn" aria-label="Shop">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9h18M3 9l1.5-6h15L21 9M3 9v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9M9 14h6"/>
+              </svg>
+            </button>
+            <button class="header-icon-btn" aria-label="Goals">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+            </button>
+            <button class="header-icon-btn" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3D Podium Container -->
+        <div class="podium-container" id="leaderboard-podium">
+          <!-- Will be dynamically populated by JS with 2nd, 1st, 3rd places -->
+        </div>
+
+        <!-- Player Standing (Active User's Rank Summary) -->
+        <div class="rank-status-card card" id="player-standing-card" style="margin-bottom: 12px; padding: 12px 16px;">
+          <!-- Content populated dynamically -->
+        </div>
+
+        <!-- Scrollable Leaderboard List for Ranks 4+ -->
+        <div class="leaderboard-list scrollable-list" id="full-leaderboard-list" style="padding-bottom: 20px;">
+          <!-- Dynamically populated rows starting from Rank 4 -->
+        </div>
+      </main>
+
+      <!-- Bottom Nav Bar (Floating pill design inside the phone frame) -->
+      <nav class="bottom-nav-bar">
+        <div class="nav-glow-container">
+          <button class="nav-item active-nav" data-view="home" aria-label="Home">
+            <img src="Icons/nav_home.png" alt="Home" class="nav-icon" />
+            <div class="nav-glow"></div>
+          </button>
+          <button class="nav-item" data-view="workout" aria-label="Workout">
+            <img src="Icons/nav_dumbbell.png" alt="Workout" class="nav-icon" />
+            <div class="nav-glow"></div>
+          </button>
+          <button class="nav-item" data-view="scanner" aria-label="Scanner">
+            <img src="Icons/nav_scan.png" alt="Scanner" class="nav-icon" />
+            <div class="nav-glow"></div>
+          </button>
+          <button class="nav-item" data-view="profile" aria-label="Profile">
+            <img src="Icons/nav_profile.png" alt="Profile" class="nav-icon" />
+            <div class="nav-glow"></div>
+          </button>
+        </div>
+      </nav>
+
+      <!-- MODALS & PORTALS -->
+      
+      <!-- Personal Information Modal -->
+      <div class="modal-backdrop" id="personal-info-modal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Personal Information</h2>
+            <button class="close-modal-btn" id="close-personal-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="input-display-name">Grinder Name</label>
+              <input type="text" id="input-display-name" placeholder="Enter your name" value="Athlete">
+            </div>
+            <div class="form-group">
+              <label>Profile Avatar</label>
+              <div class="avatar-upload-row">
+                <button class="btn outline-btn" id="btn-upload-avatar">Upload Image</button>
+                <input type="file" id="file-avatar-input" accept="image/*" style="display: none;">
+                <button class="btn text-btn" id="btn-reset-avatar">Reset</button>
+              </div>
+            </div>
+            <button class="btn filled-btn w-full" id="save-personal-btn">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action / Log Modal -->
+      <div class="modal-backdrop" id="quick-log-modal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Quick Activity Log</h2>
+            <button class="close-modal-btn" id="close-quick-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="color: #8c8f96; font-size: 0.875rem; margin-bottom: 1.25rem;">Manually log stats to test achievements and levels.</p>
+            <div class="log-grid">
+              <button class="log-option-btn" id="log-gym-opt">
+                <span>🏋️</span>
+                <strong>Log 45m Gym</strong>
+              </button>
+              <button class="log-option-btn" id="log-study-opt">
+                <span>🧠</span>
+                <strong>Log 1h Study</strong>
+              </button>
+              <button class="log-option-btn" id="log-sleep-opt">
+                <span>🛌</span>
+                <strong>Log 8h Sleep</strong>
+              </button>
+              <button class="log-option-btn" id="log-water-opt">
+                <span>💧</span>
+                <strong>Log 1 Glass Water</strong>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sleep Input Modal -->
+      <div class="modal-backdrop" id="sleep-input-modal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Log Sleep</h2>
+            <button class="close-modal-btn" id="close-sleep-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="color: #8c8f96; font-size: 0.875rem; margin-bottom: 0.75rem;">Select the hours you slept last night to sync stats.</p>
+            
+            <!-- Visual Hour Readout -->
+            <div class="sleep-readout-container">
+              <span id="sleep-slider-val" class="sleep-readout-hours">8.0</span>
+              <span class="sleep-readout-unit">hrs</span>
+            </div>
+
+            <!-- Custom Slider -->
+            <div class="form-group">
+              <div class="slider-wrapper">
+                <input type="range" id="input-sleep-slider" min="1" max="16" step="0.5" value="8">
+              </div>
+            </div>
+
+            <!-- Quick Selector Pills -->
+            <div class="quick-sleep-options">
+              <button class="quick-sleep-pill" onclick="setSleepSlider(6)">6h</button>
+              <button class="quick-sleep-pill" onclick="setSleepSlider(7)">7h</button>
+              <button class="quick-sleep-pill active-pill" onclick="setSleepSlider(8)">8h</button>
+              <button class="quick-sleep-pill" onclick="setSleepSlider(9)">9h</button>
+            </div>
+
+            <button class="btn filled-btn w-full" id="save-sleep-btn" style="margin-top: 10px;">Save Sleep Log</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subscription Modal Redesign matching 2nd image -->
+      <div class="modal-backdrop" id="subscription-modal">
+        <div class="modal-card paywall-modal-card">
+          <!-- Navigation Bar -->
+          <div class="paywall-nav-bar">
+            <button class="paywall-back-btn" onclick="closeModal(document.getElementById('subscription-modal'))" aria-label="Close modal">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <span class="paywall-nav-title">Upgrade</span>
+            <div class="paywall-nav-spacer"></div>
+          </div>
+
+          <div class="paywall-scroll-container">
+            <!-- Hero Section -->
+            <div class="paywall-hero-section">
+              <h1 class="paywall-hero-title">Pick your grind level</h1>
+              <p class="paywall-hero-subtitle">Unlock faster EXP, protect your streak, and climb the leaderboard.</p>
+            </div>
+
+            <!-- Billing Toggle -->
+            <div class="paywall-billing-toggle-container">
+              <div class="paywall-billing-toggle">
+                <button class="paywall-toggle-btn active" id="paywall-toggle-monthly" onclick="setPaywallBillingCycle('monthly')">
+                  Monthly
+                </button>
+                <button class="paywall-toggle-btn" id="paywall-toggle-annual" onclick="setPaywallBillingCycle('annual')">
+                  Annual
+                  <span class="paywall-save-badge">Save 33%</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Plan Cards Stack -->
+            <div class="paywall-plans-stack">
+              <!-- Plan 1: Free -->
+              <div class="paywall-plan-card" id="paywall-card-free" onclick="selectPaywallPlan('free')">
+                <div class="paywall-plan-header">
+                  <div class="paywall-plan-header-left">
+                    <h3 class="paywall-plan-name">Free</h3>
+                    <p class="paywall-plan-desc">Core grind experience</p>
+                  </div>
+                  <div class="paywall-plan-header-right">
+                    <div class="paywall-plan-price-row">
+                      <span class="paywall-plan-price">$0</span>
+                    </div>
+                    <span class="paywall-plan-period">forever</span>
+                  </div>
+                </div>
+                <div class="paywall-plan-divider"></div>
+                <ul class="paywall-features-list">
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Daily tasks & EXP tracking</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">View global leaderboard</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Watch ad for 1.5x EXP (once/day)</span>
+                  </li>
+                  <li class="paywall-feature-item locked">
+                    <span class="paywall-feature-icon lock">🔒</span>
+                    <span class="paywall-feature-text">Streak shields</span>
+                  </li>
+                  <li class="paywall-feature-item locked">
+                    <span class="paywall-feature-icon lock">🔒</span>
+                    <span class="paywall-feature-text">Leaderboard badge</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Plan 2: Pro -->
+              <div class="paywall-plan-card featured active" id="paywall-card-pro" onclick="selectPaywallPlan('pro')">
+                <div class="paywall-plan-popular-badge">Most popular</div>
+                <div class="paywall-plan-header">
+                  <div class="paywall-plan-header-left">
+                    <h3 class="paywall-plan-name">Pro</h3>
+                    <p class="paywall-plan-desc">For serious grinders</p>
+                  </div>
+                  <div class="paywall-plan-header-right">
+                    <div class="paywall-plan-price-row">
+                      <span class="paywall-plan-price" id="paywall-pro-price-val">$2.99</span>
+                    </div>
+                    <span class="paywall-plan-period" id="paywall-pro-period-val">/ month</span>
+                    <span class="paywall-plan-annual-note" id="paywall-pro-annual-note" style="display: none;"></span>
+                  </div>
+                </div>
+                <div class="paywall-plan-divider"></div>
+                <ul class="paywall-features-list">
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">No ads</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">1.5x EXP boost — always on</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">2 streak shields per month</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Ranked leaderboard + Pro badge</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Unlimited task categories</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Weekly EXP & habit report</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Plan 3: Elite -->
+              <div class="paywall-plan-card" id="paywall-card-elite" onclick="selectPaywallPlan('elite')">
+                <div class="paywall-plan-header">
+                  <div class="paywall-plan-header-left">
+                    <h3 class="paywall-plan-name">Elite</h3>
+                    <p class="paywall-plan-desc">The top 1% grind</p>
+                  </div>
+                  <div class="paywall-plan-header-right">
+                    <div class="paywall-plan-price-row">
+                      <span class="paywall-plan-price" id="paywall-elite-price-val">$4.99</span>
+                    </div>
+                    <span class="paywall-plan-period" id="paywall-elite-period-val">/ month</span>
+                    <span class="paywall-plan-annual-note" id="paywall-elite-annual-note" style="display: none;"></span>
+                  </div>
+                </div>
+                <div class="paywall-plan-divider"></div>
+                <ul class="paywall-features-list">
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Everything in Pro</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">2x EXP boost — always on</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Unlimited streak shields</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Custom profile, title & crown badge</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Elite-only monthly challenges</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Early access to new features</span>
+                  </li>
+                  <li class="paywall-feature-item included">
+                    <span class="paywall-feature-icon check">✓</span>
+                    <span class="paywall-feature-text">Direct feedback channel to dev team</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="paywall-cta-section">
+              <button class="paywall-primary-btn" id="paywall-primary-btn" onclick="handlePaywallPurchase()">
+                Start Pro — $2.99/mo
+              </button>
+              <button class="paywall-ghost-btn" onclick="closeModal(document.getElementById('subscription-modal'))">
+                Continue with Free
+              </button>
+              
+              <!-- Simulated StoreKit 2 Status text feedback -->
+              <div class="paywall-status-text" id="paywall-status-text"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="paywall-footer">
+              <p class="paywall-footer-legal">Cancel anytime. Billed through the App Store.</p>
+              <div class="paywall-footer-links">
+                <a href="#" onclick="event.preventDefault(); restoreSubscriptionNew();">Restore purchases</a>
+                <span class="paywall-footer-divider">·</span>
+                <a href="#" onclick="event.preventDefault(); openLegalModal('terms-conditions-modal')">Terms</a>
+                <span class="paywall-footer-divider">·</span>
+                <a href="#" onclick="event.preventDefault(); openLegalModal('privacy-policy-modal')">Privacy</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- Achievement Details Modal -->
+        <div class="modal-backdrop" id="achievement-details-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2>Achievement Details</h2>
+              <button class="close-modal-btn" id="close-ach-details-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+              <div class="ach-modal-badge-wrapper" style="position: relative;">
+                <img id="ach-modal-img" src="achivement/dumble.png" alt="Achievement Logo" class="achievement-icon-img" style="width: 80px; height: 80px; filter: none;">
+                <span class="badge-xp-text" id="ach-modal-xp" style="font-size: 0.72rem; padding: 2px 6px; bottom: -8px;">+100 XP</span>
+              </div>
+              <div style="margin-top: 10px;">
+                <h3 id="ach-modal-title" style="font-size: 1.25rem; font-weight: 800; color: #fff; text-transform: capitalize;">First rep</h3>
+                <span id="ach-modal-category" class="rank-tier-pill" style="margin: 8px auto; display: block;">WORKOUT</span>
+              </div>
+              <p id="ach-modal-desc" style="color: var(--color-text-secondary); font-size: 0.85rem; line-height: 1.4; max-width: 280px; margin-bottom: 5px;">
+                Complete your first workout session.
+              </p>
+              <div class="ach-modal-progress-box" style="width: 100%; background: #1a1c20; padding: 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); text-align: left;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 6px;">
+                  <span style="color: var(--color-text-secondary);">Progress:</span>
+                  <span id="ach-modal-progress-text" style="font-weight: 700; color: #fff;">0 / 1</span>
+                </div>
+                <div class="rank-xp-bar-container" style="margin-bottom: 0;">
+                  <div class="rank-xp-fill" id="ach-modal-progress-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+              <button class="btn filled-btn w-full" id="ach-modal-action-btn">Go Track Activity</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rank Progression Modal -->
+        <div class="modal-backdrop" id="ranks-progression-modal">
+          <div class="modal-card" style="max-height: 600px; overflow-y: auto;">
+            <div class="modal-header">
+              <h2>Grinder Ranks & Progression</h2>
+              <button class="close-modal-btn" id="close-ranks-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+              <p style="color: var(--color-text-secondary); font-size: 0.8rem; margin-bottom: 8px; line-height: 1.4;">
+                Earn XP through workouts, studies, sleep, water, steps, and achievements to level up your Grinder Status.
+              </p>
+              
+              <div class="ranks-list" id="ranks-progression-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Dynamic ranks injected via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sign In Modal -->
+        <div class="modal-backdrop" id="signin-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2 id="auth-modal-title">Sign In to Grind</h2>
+              <button class="close-modal-btn" onclick="closeModal(document.getElementById('signin-modal'))">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px; padding: 16px;">
+              <!-- Auth Error Alert -->
+              <div id="auth-error-alert" style="display: none; background: rgba(234, 67, 53, 0.1); border: 1px solid rgba(234, 67, 53, 0.3); color: #ea4335; padding: 10px; border-radius: 8px; font-size: 0.78rem; text-align: left; font-weight: 500;"></div>
+              
+              <!-- Main Auth Container (Form inputs) -->
+              <div id="auth-main-container" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Tab togglers -->
+                <div style="display: flex; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px;">
+                  <button id="auth-tab-login" onclick="switchAuthTab('login')" style="flex: 1; border: none; padding: 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; background: var(--bg-card); color: #fff; cursor: pointer; transition: all 0.2s;">Log In</button>
+                  <button id="auth-tab-signup" onclick="switchAuthTab('signup')" style="flex: 1; border: none; padding: 8px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.2s;">Sign Up</button>
+                </div>
+
+                <!-- Google Sign In Button in Modal -->
+                <button class="ob-google-btn" onclick="signInWithGoogle()" style="width: 100%; margin: 4px 0 0 0; display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 8px; background: #fff; border: none; color: #111; font-family: var(--font-main); font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">
+                  <svg viewBox="0 0 24 24" width="18" height="18"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                  <span>Continue with Google</span>
+                </button>
+                
+                <div class="ob-divider" style="margin: 2px 0; color: var(--color-text-secondary); font-size: 0.75rem; display: flex; align-items: center; gap: 8px;">
+                  <span style="flex: 1; height: 1px; background: var(--border-color);"></span>
+                  <span>or</span>
+                  <span style="flex: 1; height: 1px; background: var(--border-color);"></span>
+                </div>
+
+                <!-- Input Forms -->
+                <div id="auth-username-group" class="form-group" style="display: none; text-align: left; flex-direction: column; gap: 4px;">
+                  <label for="auth-input-username" style="font-size: 0.78rem; font-weight: 600; color: var(--color-text-secondary);">Grinder Name</label>
+                  <input type="text" id="auth-input-username" placeholder="Choose a username" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none;">
+                </div>
+
+                <div class="form-group" style="text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                  <label for="auth-input-email" id="auth-label-email" style="font-size: 0.78rem; font-weight: 600; color: var(--color-text-secondary);">Email or Username</label>
+                  <input type="text" id="auth-input-email" placeholder="Enter your email or username" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none;">
+                </div>
+
+                <div class="form-group" style="text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                  <label for="auth-input-password" style="font-size: 0.78rem; font-weight: 600; color: var(--color-text-secondary);">Password</label>
+                  <input type="password" id="auth-input-password" placeholder="Enter your password" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none;">
+                </div>
+
+                <button class="subscribe-button-new" id="auth-submit-btn" onclick="submitAuthForm()" style="margin-top: 8px; width: 100%; height: 42px;">
+                  Log In
+                </button>
+              </div>
+
+              <!-- OTP Verification Group -->
+              <div id="auth-otp-container" style="display: none; flex-direction: column; gap: 14px;">
+                <p id="auth-otp-info" style="font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.4; text-align: left;">
+                  We have sent a 6-digit confirmation code to your email. Please check your inbox and enter it below:
+                </p>
+                <div class="form-group" style="text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                  <label for="auth-input-otp" style="font-size: 0.78rem; font-weight: 600; color: var(--color-text-secondary);">Verification Code (OTP)</label>
+                  <input type="text" id="auth-input-otp" placeholder="Enter OTP code" maxlength="8" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none; letter-spacing: 4px; text-align: center; font-size: 1.2rem; font-weight: 700;">
+                </div>
+                <button class="subscribe-button-new" id="auth-verify-btn" onclick="submitOtpVerification()" style="margin-top: 8px; width: 100%; height: 42px;">
+                  Verify & Complete Sign Up
+                </button>
+                <button onclick="cancelOtpVerification()" style="background: transparent; border: none; color: var(--color-text-secondary); width: 100%; text-align: center; margin-top: 6px; cursor: pointer; font-size: 0.75rem; text-decoration: underline; font-family: var(--font-main);">
+                  Back to Sign Up
+                </button>
+              </div>
+
+              <div style="font-size: 0.72rem; color: var(--color-text-secondary); line-height: 1.4; margin-top: 4px;">
+                Sign in to save your level progression, streak, achievements, and unlock Pro/Elite subscription features.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly EXP & Habits Report Modal -->
+        <div class="modal-backdrop" id="weekly-report-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2>Weekly Habit Report</h2>
+              <button class="close-modal-btn" onclick="closeModal(document.getElementById('weekly-report-modal'))">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px; padding: 16px;">
+              <p style="color: var(--color-text-secondary); font-size: 0.8rem; line-height: 1.4;">Weekly metrics overview for <strong>Grind Premium</strong> users.</p>
+              <div style="background: #1a1c20; padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.85rem; margin-bottom: 12px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">EXP History</h3>
+                <div class="report-graph" style="display: flex; align-items: flex-end; justify-content: space-between; height: 110px; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 35px; background: var(--color-text-secondary); border-radius: 4px;"></div>
+                    <span style="font-size: 0.65rem; color: var(--color-text-secondary);">Mon</span>
+                  </div>
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 65px; background: var(--color-text-secondary); border-radius: 4px;"></div>
+                    <span style="font-size: 0.65rem; color: var(--color-text-secondary);">Tue</span>
+                  </div>
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 15px; background: var(--color-text-secondary); border-radius: 4px;"></div>
+                    <span style="font-size: 0.65rem; color: var(--color-text-secondary);">Wed</span>
+                  </div>
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 95px; background: var(--accent-yellow); border-radius: 4px; box-shadow: 0 0 10px var(--accent-yellow-glow);"></div>
+                    <span style="font-size: 0.65rem; color: #fff; font-weight: 700;">Thu</span>
+                  </div>
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 40px; background: var(--color-text-secondary); border-radius: 4px;"></div>
+                    <span style="font-size: 0.65rem; color: var(--color-text-secondary);">Fri</span>
+                  </div>
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 20px; background: var(--color-text-secondary); border-radius: 4px;"></div>
+                    <span style="font-size: 0.65rem; color: var(--color-text-secondary);">Sat</span>
+                  </div>
+                  <div class="graph-bar-col" style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                    <div class="graph-bar" style="width: 14px; height: 30px; background: var(--color-text-secondary); border-radius: 4px;"></div>
+                    <span style="font-size: 0.65rem; color: var(--color-text-secondary);">Sun</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.8rem; margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #1a1c20; padding-bottom: 6px;">
+                  <span style="color: var(--color-text-secondary);">Total Weekly XP:</span>
+                  <span id="report-weekly-xp" style="font-weight: 700; color: #fff;">1,250 XP</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #1a1c20; padding-bottom: 6px;">
+                  <span style="color: var(--color-text-secondary);">Consistent Habits Completed:</span>
+                  <span id="report-habits-count" style="font-weight: 700; color: var(--accent-green);">14 sessions</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="color: var(--color-text-secondary);">Streak Shields remaining:</span>
+                  <span id="report-shields-count" style="font-weight: 700; color: var(--accent-yellow);">2 Active</span>
+                </div>
+              </div>
+              <button class="btn outline-btn w-full" onclick="closeModal(document.getElementById('weekly-report-modal'))">Close Report</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Elite Customization Modal -->
+        <div class="modal-backdrop" id="elite-customization-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2>Elite Customization</h2>
+              <button class="close-modal-btn" onclick="closeModal(document.getElementById('elite-customization-modal'))">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px; padding: 16px;">
+              <p style="color: var(--color-text-secondary); font-size: 0.8rem; line-height: 1.4;">Stand out on the leaderboard. Customize your Grinder identity.</p>
+              
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+                <label for="select-username-color" style="font-size: 0.8rem; font-weight: 600; color: #fff;">Username Glow Color</label>
+                <select id="select-username-color" onchange="applyEliteSettings()" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none;">
+                  <option value="#ffffff">Default White</option>
+                  <option value="#ebd45b">Pure Gold 💛</option>
+                  <option value="#2979ff">Cyber Blue 💙</option>
+                  <option value="#ff7043">Volt Orange 🧡</option>
+                  <option value="#00e676">Toxic Lime 💚</option>
+                  <option value="#ff2979">Neon Crimson ❤️</option>
+                </select>
+              </div>
+              
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+                <label for="select-user-title" style="font-size: 0.8rem; font-weight: 600; color: #fff;">Grinder Title</label>
+                <select id="select-user-title" onchange="applyEliteSettings()" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none;">
+                  <option value="GRINDER">GRINDER (Default)</option>
+                  <option value="SHADOW GOD">SHADOW GOD 💀</option>
+                  <option value="AESTHETIC DEITY">AESTHETIC DEITY ⚡</option>
+                  <option value="LOCKED IN">LOCKED IN 🔥</option>
+                  <option value="TITAN">TITAN 🏋️</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; text-align: left;">
+                <label for="select-user-frame" style="font-size: 0.8rem; font-weight: 600; color: #fff;">Avatar Profile Frame</label>
+                <select id="select-user-frame" onchange="applyEliteSettings()" style="background: #1e2025; border: 1px solid var(--border-color); color: #fff; width: 100%; padding: 10px; border-radius: var(--border-radius-md); outline: none;">
+                  <option value="none">No Frame</option>
+                  <option value="gold-frame">Gold Crown Border 👑</option>
+                  <option value="neon-frame">Neon Pulse Border 🎆</option>
+                  <option value="cyber-frame">Cybernetic Mesh 🤖</option>
+                </select>
+              </div>
+              
+              <button class="btn filled-btn w-full" onclick="saveEliteCustomization()">Save Customizations</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Elite Challenges Modal -->
+        <div class="modal-backdrop" id="elite-challenges-modal">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2>Elite Monthly Challenges</h2>
+              <button class="close-modal-btn" onclick="closeModal(document.getElementById('elite-challenges-modal'))">&times;</button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px; padding: 16px;">
+              <p style="color: var(--color-text-secondary); font-size: 0.8rem; line-height: 1.4;">Exclusive challenges for elite grinders. Unlocks legendary avatar frames & custom titles.</p>
+              <div style="background: linear-gradient(135deg, rgba(235, 212, 91, 0.1) 0%, rgba(22, 24, 28, 1) 100%); border: 1px solid rgba(235, 212, 91, 0.2); padding: 16px; border-radius: var(--border-radius-lg); position: relative; overflow: hidden; margin-top: 10px; text-align: left;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                  <span class="rank-tier-pill" style="background: rgba(235, 212, 91, 0.15); color: var(--accent-yellow);">ACTIVE CHALLENGE</span>
+                  <span style="font-size: 0.72rem; color: var(--color-text-secondary);">Expires in 18d</span>
+                </div>
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 6px;">The Titan Protocol</h3>
+                <p style="color: var(--color-text-secondary); font-size: 0.78rem; line-height: 1.4; margin-bottom: 12px;">Complete 5 workout routines and log at least 20 hours of deep study this month.</p>
+                
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; color: var(--color-text-secondary);">
+                  <span>Progress:</span>
+                  <span id="challenge-progress-text">1 / 5 Workouts • 10 / 20 hrs</span>
+                </div>
+                <div class="rank-xp-bar-container" style="height: 6px; background: rgba(255,255,255,0.05); margin-bottom: 14px;">
+                  <div class="rank-xp-fill" style="width: 30%; background: var(--accent-yellow);"></div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
+                  <span style="color: #fff; font-weight: 700;">Reward: "TITAN" Title + Gold Frame</span>
+                  <span style="color: var(--accent-yellow); font-weight: 700;">+1,000 XP</span>
+                </div>
+              </div>
+              <button class="btn outline-btn w-full" style="margin-top: 10px;" onclick="closeModal(document.getElementById('elite-challenges-modal'))">Close Panel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fullscreen Ad Overlay -->
+      <div class="ad-overlay" id="ad-overlay">
+        <div class="ad-content">
+          <div class="ad-header">
+            <span class="ad-label">SPONSORED</span>
+            <span class="ad-timer" id="ad-timer">Skip in 5s</span>
+          </div>
+          <div class="ad-video-placeholder">
+            <div class="ad-play-icon">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <div class="ad-brand-text">
+              <span class="ad-brand-name">PARTNER AD</span>
+              <span class="ad-brand-sub">Your Ad Content Here</span>
+            </div>
+          </div>
+          <div class="ad-footer">
+            <div class="ad-reward-info" id="ad-reward-info" style="display: none;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="#ebd45b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>Watch to earn <strong>2x EXP</strong> on your next task!</span>
+            </div>
+            <button class="ad-skip-btn" id="ad-skip-btn" disabled onclick="closeAd()">Skip in 5s</button>
+            <button class="ad-close-btn" id="ad-close-btn" style="display: none;" onclick="closeAd()">Close Ad ✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Profile Detail Modal -->
+      <div class="modal-backdrop" id="player-profile-modal">
+        <div class="modal-card" style="max-width: 320px; border: 1.5px solid var(--border-color); background: #0b0c0e;">
+          <div class="modal-header" style="border: none; padding: 12px 16px 4px 16px;">
+            <h2>Grinder Profile</h2>
+            <button class="close-modal-btn" onclick="closeModal(document.getElementById('player-profile-modal'))">&times;</button>
+          </div>
+          <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 16px; text-align: center;">
+            <div class="avatar-circle" id="player-modal-avatar-frame" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid var(--accent-yellow); margin-bottom: 4px;">
+              <img id="player-modal-avatar" src="" alt="Player Avatar" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+            <div>
+              <h3 id="player-modal-name" style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 2px;"></h3>
+              <span id="player-modal-handle" style="font-size: 0.8rem; color: var(--color-text-secondary);"></span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 0.68rem; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase;">Level</span>
+                <span id="player-modal-level" style="font-size: 1.1rem; font-weight: 800; color: var(--accent-yellow);"></span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 0.68rem; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase;">Total XP</span>
+                <span id="player-modal-xp" style="font-size: 1.1rem; font-weight: 800; color: #fff;"></span>
+              </div>
+            </div>
+            <button class="subscribe-button-new" onclick="closeModal(document.getElementById('player-profile-modal'))" style="width: 100%; height: 38px; font-size: 0.82rem;">
+              Close Profile
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy Policy Modal -->
+      <div class="legal-modal-backdrop" id="privacy-policy-modal">
+        <div class="legal-modal-container">
+          <div class="legal-modal-header">
+            <button class="legal-back-btn" onclick="closeLegalModal('privacy-policy-modal')">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <h2>Privacy Policy</h2>
+            <div class="legal-header-badge">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Protected</span>
+            </div>
+          </div>
+          <div class="legal-modal-body">
+            <div class="legal-last-updated">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span>Last updated: June 1, 2026</span>
+            </div>
+
+            <div class="legal-intro-card">
+              <p>At <strong>Grind</strong>, your privacy is our top priority. This Privacy Policy explains how we collect, use, protect, and handle your personal information when you use our mobile application and related services.</p>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </div>
+                <h3>1. Information We Collect</h3>
+              </div>
+              <div class="legal-section-content">
+                <p><strong>Account Information:</strong> When you create an account, we collect your name, email address, and profile picture (if provided via Google Sign-In).</p>
+                <p><strong>Health & Fitness Data:</strong> We collect data you voluntarily log within the app, including workout sessions, study hours, sleep patterns, water intake, and step counts. This data is stored locally on your device and synced to our servers only when you are signed in.</p>
+                <p><strong>Usage Data:</strong> We automatically collect anonymous usage analytics such as app interactions, feature usage patterns, session duration, and crash reports to improve our services.</p>
+                <p><strong>Device Information:</strong> We may collect device type, operating system version, and unique device identifiers for functionality and security purposes.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <h3>2. How We Use Your Information</h3>
+              </div>
+              <div class="legal-section-content">
+                <ul>
+                  <li>To provide, maintain, and improve the Grind application and its features</li>
+                  <li>To personalize your experience, including habit recommendations and achievement tracking</li>
+                  <li>To sync your progress across devices when signed in</li>
+                  <li>To process subscriptions and manage premium features (Grind Pro & Elite)</li>
+                  <li>To send push notifications (only with your explicit consent)</li>
+                  <li>To analyze aggregate, anonymized usage trends to improve our services</li>
+                  <li>To detect, prevent, and address technical issues or abuse</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                </div>
+                <h3>3. Data Security</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>We implement industry-standard security measures to protect your personal data, including:</p>
+                <ul>
+                  <li><strong>Encryption:</strong> All data transmitted between your device and our servers is encrypted using TLS 1.3</li>
+                  <li><strong>Secure Storage:</strong> Personal data is stored in encrypted databases with access controls</li>
+                  <li><strong>Authentication:</strong> We use OAuth 2.0 for secure Google Sign-In integration</li>
+                  <li><strong>Regular Audits:</strong> We conduct periodic security audits and vulnerability assessments</li>
+                </ul>
+                <p>While we strive to protect your information, no method of electronic transmission or storage is 100% secure. We cannot guarantee absolute security.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <h3>4. Data Sharing & Third Parties</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>We do <strong>not</strong> sell, rent, or trade your personal information to third parties. We may share limited data with:</p>
+                <ul>
+                  <li><strong>Service Providers:</strong> Trusted third-party services that help us operate the app (e.g., cloud hosting, analytics, payment processing)</li>
+                  <li><strong>Legal Requirements:</strong> When required by law, court order, or governmental authority</li>
+                  <li><strong>Safety:</strong> To protect the rights, property, or safety of Grind, our users, or the public</li>
+                </ul>
+                <p>All third-party service providers are contractually obligated to maintain the confidentiality and security of your data.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <h3>5. Your Rights & Choices</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>You have the right to:</p>
+                <ul>
+                  <li><strong>Access:</strong> Request a copy of your personal data at any time</li>
+                  <li><strong>Correction:</strong> Update or correct any inaccurate information in your profile</li>
+                  <li><strong>Deletion:</strong> Request the deletion of your account and all associated data</li>
+                  <li><strong>Opt-Out:</strong> Disable notifications and analytics collection at any time through the app settings</li>
+                  <li><strong>Data Portability:</strong> Export your fitness and habit data in a standard format</li>
+                </ul>
+                <p>To exercise any of these rights, please contact us at <strong>privacy@grindapp.com</strong>.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <h3>6. Children's Privacy</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>Grind is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If we discover that a child under 13 has provided us with personal information, we will promptly delete it. If you believe a child has provided us with personal data, please contact us at <strong>privacy@grindapp.com</strong>.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <h3>7. Changes to This Policy</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy within the app and updating the "Last Updated" date. Your continued use of Grind after any changes constitutes your acceptance of the updated policy.</p>
+              </div>
+            </div>
+
+            <div class="legal-contact-card">
+              <div class="legal-contact-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <h4>Questions or Concerns?</h4>
+                <p>Contact our privacy team at <strong>privacy@grindapp.com</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terms & Conditions Modal -->
+      <div class="legal-modal-backdrop" id="terms-conditions-modal">
+        <div class="legal-modal-container">
+          <div class="legal-modal-header">
+            <button class="legal-back-btn" onclick="closeLegalModal('terms-conditions-modal')">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <h2>Terms & Conditions</h2>
+            <div class="legal-header-badge">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>Legal</span>
+            </div>
+          </div>
+          <div class="legal-modal-body">
+            <div class="legal-last-updated">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span>Last updated: June 1, 2026</span>
+            </div>
+
+            <div class="legal-intro-card">
+              <p>Welcome to <strong>Grind</strong>. These Terms and Conditions govern your use of the Grind mobile application ("App") and all related services. By downloading, installing, or using the App, you agree to be bound by these Terms. If you do not agree, please do not use the App.</p>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h3>1. Account Registration</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>To access certain features of Grind, you may need to create an account. When you register, you agree to:</p>
+                <ul>
+                  <li>Provide accurate, current, and complete information</li>
+                  <li>Maintain the security of your account credentials</li>
+                  <li>Accept responsibility for all activities that occur under your account</li>
+                  <li>Notify us immediately of any unauthorized use of your account</li>
+                </ul>
+                <p>You must be at least 13 years of age to create an account. By registering, you represent that you meet this age requirement.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h3>2. Acceptable Use</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>You agree to use Grind only for lawful purposes and in accordance with these Terms. You agree <strong>not</strong> to:</p>
+                <ul>
+                  <li>Use the App in any way that violates any applicable law or regulation</li>
+                  <li>Attempt to gain unauthorized access to any part of the App or its systems</li>
+                  <li>Interfere with or disrupt the App's infrastructure or other users' experience</li>
+                  <li>Use automated scripts, bots, or other means to artificially inflate XP, streaks, or leaderboard rankings</li>
+                  <li>Upload, transmit, or distribute any malicious content or code</li>
+                  <li>Impersonate any person or entity, or falsely represent your affiliation with any person or entity</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                </div>
+                <h3>3. Subscriptions & Payments</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>Grind offers both free and premium subscription plans:</p>
+                <ul>
+                  <li><strong>Grind Free:</strong> Access to core features with limited tasks per day and ad-supported content</li>
+                  <li><strong>Grind Pro:</strong> Unlimited tasks, ad-free experience, weekly habit reports, and streak shields</li>
+                  <li><strong>Grind Elite:</strong> All Pro features plus exclusive challenges, custom profiles, and priority support</li>
+                </ul>
+                <p><strong>Billing:</strong> Subscriptions are billed on a recurring basis (monthly or yearly) at the rate displayed at the time of purchase. Prices may vary by region and are subject to change with prior notice.</p>
+                <p><strong>Cancellation:</strong> You may cancel your subscription at any time through your device's app store settings. Cancellation takes effect at the end of the current billing cycle. No refunds are provided for partial billing periods.</p>
+                <p><strong>Free Trials:</strong> If offered, free trial periods automatically convert to paid subscriptions unless cancelled before the trial ends.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <h3>4. XP, Ranks & Leaderboard</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>The XP (Experience Points), rank system, and leaderboard features within Grind are designed to motivate and gamify your personal development journey.</p>
+                <ul>
+                  <li>XP, ranks, badges, and leaderboard positions hold <strong>no monetary value</strong> and cannot be exchanged, traded, or redeemed for cash or prizes</li>
+                  <li>We reserve the right to reset, adjust, or modify XP balances and leaderboard standings at any time to maintain fairness</li>
+                  <li>Any attempt to manipulate or artificially inflate XP, achievements, or leaderboard rankings may result in account suspension or termination</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                </div>
+                <h3>5. Health & Fitness Disclaimer</h3>
+              </div>
+              <div class="legal-section-content">
+                <div class="legal-warning-card">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <p><strong>Important:</strong> Grind is a habit-tracking and motivation tool, <strong>not</strong> a medical device or healthcare provider.</p>
+                </div>
+                <ul>
+                  <li>The App does not provide medical advice, diagnosis, or treatment</li>
+                  <li>Always consult a qualified healthcare professional before starting any new fitness or nutrition program</li>
+                  <li>AI body scanning features are for entertainment and motivational purposes only and should not be used for medical assessments</li>
+                  <li>You use the fitness and health tracking features at your own risk</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>6. Intellectual Property</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>All content, features, and functionality of the Grind application — including but not limited to text, graphics, logos, icons, images, audio, video, software, and the underlying code — are the exclusive property of Grind and are protected by international copyright, trademark, and other intellectual property laws.</p>
+                <p>You are granted a limited, non-exclusive, non-transferable, revocable license to use the App for personal, non-commercial purposes only.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </div>
+                <h3>7. Termination</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>We reserve the right to suspend or terminate your access to Grind at any time, without prior notice, for conduct that we believe:</p>
+                <ul>
+                  <li>Violates these Terms and Conditions</li>
+                  <li>Is harmful to other users, us, or third parties</li>
+                  <li>Involves fraudulent or illegal activity</li>
+                </ul>
+                <p>Upon termination, your right to use the App ceases immediately. Provisions of these Terms that by their nature should survive termination shall remain in effect.</p>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <h3>8. Limitation of Liability</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>To the fullest extent permitted by applicable law, Grind and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, profits, goodwill, or other intangible losses resulting from:</p>
+                <ul>
+                  <li>Your use or inability to use the App</li>
+                  <li>Any unauthorized access to or alteration of your data</li>
+                  <li>Any interruption or cessation of the service</li>
+                  <li>Any bugs, viruses, or errors transmitted through the App</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-header">
+                <div class="legal-section-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <h3>9. Changes to These Terms</h3>
+              </div>
+              <div class="legal-section-content">
+                <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.</p>
+                <p>By continuing to use the App after any revisions become effective, you agree to be bound by the revised Terms.</p>
+              </div>
+            </div>
+
+            <div class="legal-contact-card">
+              <div class="legal-contact-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <h4>Questions about these Terms?</h4>
+                <p>Contact our legal team at <strong>legal@grindapp.com</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications Toast Center -->
+      <div class="toast-container" id="toast-container"></div>
+
+      <!-- Floating XP Popup Container -->
+      <div class="xp-popups-container" id="xp-popups-container"></div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
