@@ -5,8 +5,9 @@ import { Theme } from '../components/Theme';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { adminApi, AdminUser } from '../services/adminApi';
-import { getAsset } from '../constants/assetsMap';
 import { supabase } from '../services/supabase';
+import { getAsset } from '../constants/assetsMap';
+import Svg, { Line, Polyline } from 'react-native-svg';
 
 // Static bots configurations matching app.js
 const STATIC_BOTS = [
@@ -42,161 +43,9 @@ export interface LeaderboardPlayer {
 }
 
 export const LeaderboardScreen: React.FC = () => {
-  const { state, showToast } = useApp();
+  const { state, switchView, competitors, loadingLeaderboard: loadingList } = useApp();
   const [search, setSearch] = useState('');
-  const [competitors, setCompetitors] = useState<LeaderboardPlayer[]>([]);
-  const [loadingList, setLoadingList] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<LeaderboardPlayer | null>(null);
-
-  useEffect(() => {
-    fetchLeaderboardData();
-  }, [state.totalXP, state.subscriptionPlan, state.grinderName]);
-
-  const fetchLeaderboardData = async () => {
-    setLoadingList(true);
-    try {
-      const session = (await supabase.auth.getSession()).data.session;
-      if (session && state.isUserSignedIn) {
-        // Fetch profiles registered from backend proxy via select join queries
-        const { data: rows, error } = await supabase
-          .from('profiles')
-          .select('id, username, subscription_plan, user_states(state_json)')
-          .neq('subscription_plan', 'free');
-
-        if (error) throw error;
-
-        const dbCompetitors: LeaderboardPlayer[] = [];
-        rows?.forEach((row: any) => {
-          const uState = row.user_states?.state_json || {};
-          const totalXP = uState.totalXP || 0;
-          
-          let lvl = 10;
-          let badge = 'badges/bronze.png';
-          if (totalXP < 3000) { lvl = 10; badge = 'badges/bronze.png'; }
-          else if (totalXP < 8000) { lvl = 20; badge = 'badges/silver.png'; }
-          else if (totalXP < 16000) { lvl = 30; badge = 'badges/gold.png'; }
-          else if (totalXP < 30000) { lvl = 40; badge = 'badges/dimond.png'; }
-          else if (totalXP < 50000) { lvl = 50; badge = 'badges/master.png'; }
-          else if (totalXP < 100000) { lvl = 60; badge = 'badges/supreme.png'; }
-          else { lvl = 70; badge = 'badges/ultrasupreme.png'; }
-
-          const priorityXP = row.subscription_plan === 'elite' ? totalXP + 1000 : totalXP;
-          const isUser = row.username === state.grinderName;
-
-          dbCompetitors.push({
-            id: row.id,
-            name: row.username,
-            xp: totalXP,
-            priorityXP,
-            lvl,
-            badge,
-            plan: row.subscription_plan,
-            handle: `@${row.username.toLowerCase().replace(/\s+/g, '')}`,
-            avatarUrl: uState.avatarUrl || 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png',
-            isUser,
-            isRealUser: true,
-          });
-        });
-
-        // Add static bots
-        const botsList: LeaderboardPlayer[] = STATIC_BOTS.map((bot) => ({
-          name: bot.name,
-          xp: bot.xp,
-          lvl: bot.lvl,
-          badge: bot.badge,
-          plan: bot.plan as any,
-          handle: bot.handle,
-          avatarUrl: bot.avatarUrl,
-          isUser: false,
-        }));
-
-        // Merge, filter duplicates, and sort
-        const userExistsInDb = dbCompetitors.some(p => p.isUser);
-        if (!userExistsInDb && state.subscriptionPlan !== 'free') {
-          // If user upgraded but sync hasn't occurred yet
-          dbCompetitors.push({
-            name: state.grinderName,
-            xp: state.totalXP,
-            lvl: Math.floor(state.totalXP / 400) + 1,
-            badge: getBadgeSrc(state.totalXP),
-            plan: state.subscriptionPlan,
-            handle: `@${state.grinderName.toLowerCase().replace(/\s+/g, '')}`,
-            avatarUrl: state.avatarUrl || 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png',
-            isUser: true,
-          });
-        }
-
-        const combined = [...dbCompetitors, ...botsList];
-        
-        // Remove duplicates if same handles exist
-        const unique = combined.filter((v, i, a) => a.findIndex(t => (t.handle === v.handle)) === i);
-        
-        unique.sort((a, b) => {
-          const aVal = a.priorityXP !== undefined ? a.priorityXP : a.xp;
-          const bVal = b.priorityXP !== undefined ? b.priorityXP : b.xp;
-          return bVal - aVal;
-        });
-
-        setCompetitors(unique);
-      } else {
-        // Offline / Unauthenticated flow: load local mock leaderboard
-        generateMockOfflineLeaderboard();
-      }
-    } catch (err) {
-      console.error('Failed to load online leaderboard, loading fallback:', err);
-      generateMockOfflineLeaderboard();
-    } finally {
-      setLoadingList(false);
-    }
-  };
-
-  const generateMockOfflineLeaderboard = () => {
-    const list: LeaderboardPlayer[] = STATIC_BOTS.map((bot) => ({
-      name: bot.name,
-      xp: bot.xp,
-      lvl: bot.lvl,
-      badge: bot.badge,
-      plan: bot.plan as any,
-      handle: bot.handle,
-      avatarUrl: bot.avatarUrl,
-      isUser: false,
-    }));
-
-    // Inject user if they are ranked (Pro/Elite)
-    if (state.subscriptionPlan !== 'free') {
-      let lvl = 10;
-      let badge = 'badges/bronze.png';
-      if (state.totalXP < 3000) { lvl = 10; badge = 'badges/bronze.png'; }
-      else if (state.totalXP < 8000) { lvl = 20; badge = 'badges/silver.png'; }
-      else if (state.totalXP < 16000) { lvl = 30; badge = 'badges/gold.png'; }
-      else if (state.totalXP < 30000) { lvl = 40; badge = 'badges/dimond.png'; }
-      else if (state.totalXP < 50000) { lvl = 50; badge = 'badges/master.png'; }
-      else if (state.totalXP < 100000) { lvl = 60; badge = 'badges/supreme.png'; }
-      else { lvl = 70; badge = 'badges/ultrasupreme.png'; }
-
-      const priorityXP = state.subscriptionPlan === 'elite' ? state.totalXP + 1000 : state.totalXP;
-      
-      list.push({
-        name: state.grinderName,
-        xp: state.totalXP,
-        priorityXP,
-        lvl,
-        badge,
-        plan: state.subscriptionPlan,
-        handle: `@${state.grinderName.toLowerCase().replace(/\s+/g, '')}`,
-        avatarUrl: state.avatarUrl || 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png',
-        isUser: true,
-      });
-    }
-
-    list.sort((a, b) => {
-      const aVal = a.priorityXP !== undefined ? a.priorityXP : a.xp;
-      const bVal = b.priorityXP !== undefined ? b.priorityXP : b.xp;
-      return bVal - aVal;
-    });
-
-    setCompetitors(list);
-  };
 
   const getBadgeSrc = (xp: number) => {
     if (xp < 3000) return 'badges/bronze.png';
@@ -235,8 +84,13 @@ export const LeaderboardScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        <Text style={styles.tag}>GLOBAL ARENA LEAGUE</Text>
-        <Text style={styles.title}>Grinders Leaderboard</Text>
+        {/* Back navigation header (using global back button, displaying page titles locally) */}
+        <View style={styles.headerRow}>
+          <View style={styles.headerTextGroup}>
+            <Text style={styles.tag}>GLOBAL ARENA LEAGUE</Text>
+            <Text style={styles.title}>Grinders Leaderboard</Text>
+          </View>
+        </View>
 
         {/* Global Player Standing Card */}
         <Card style={[styles.standingCard, isFree && styles.standingCardFree]}>
@@ -438,7 +292,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     letterSpacing: -0.5,
     marginTop: 2,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
     marginBottom: 20,
+  },
+  headerTextGroup: {
+    flex: 1,
+  },
+  backBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderWidth: 1.2,
+    borderColor: Theme.colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   standingCard: {
     flexDirection: 'row',

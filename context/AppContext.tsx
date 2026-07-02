@@ -31,6 +31,20 @@ export interface Exercise {
   completedSets: number;
   reps: string;
   muscles: string;
+  desc?: string;
+}
+
+// Interface for customizable/progression exercises
+export interface CustomExercise {
+  id: string;
+  name: string;
+  muscles: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  enabled: boolean;
+  isCustom: boolean;
+  sets: number;
+  reps: string;
+  desc?: string;
 }
 
 // Interface for active workout state
@@ -119,6 +133,10 @@ export interface AppState {
   studyPastMidnightCount: number;
   daysUsedCount: number;
   season: number;
+  workoutType?: 'calisthenics' | 'gym' | 'home' | null;
+  workoutDaysCompleted?: number;
+  calisthenicsExercises?: CustomExercise[];
+  homeWorkoutExercises?: CustomExercise[];
   
   achievements: { [key: number]: UserAchievement };
   tasks: TaskItem[];
@@ -229,6 +247,137 @@ export const WORKOUT_ROUTINES: { [key: number]: { [key: number]: { title: string
   }
 };
 
+export const DEFAULT_CALISTHENICS_EXERCISES: CustomExercise[] = [
+  // Beginner
+  { id: 'cal-b1', name: 'Push-ups', muscles: 'Chest, Shoulders, Triceps', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Keep your elbows tucked in at a 45-degree angle.' },
+  { id: 'cal-b2', name: 'Knee Push-ups', muscles: 'Chest, Shoulders', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Great for building baseline push strength.' },
+  { id: 'cal-b3', name: 'Wall Push-ups', muscles: 'Chest, Shoulders', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '15 reps', desc: 'Focus on slow, controlled movement.' },
+  { id: 'cal-b4', name: 'Jumping Jacks', muscles: 'Cardio, Legs', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '30 sec', desc: 'Keep a steady, rhythmic pace.' },
+  { id: 'cal-b5', name: 'Plank (20-30 sec)', muscles: 'Core', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '25 sec', desc: 'Keep your core tight and back flat. Do not let hips sag.' },
+  { id: 'cal-b6', name: 'Glute Bridge', muscles: 'Glutes, Hamstrings', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Squeeze your glutes at the top of the movement.' },
+  { id: 'cal-b7', name: 'Bodyweight Squat', muscles: 'Quads, Glutes', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '15 reps', desc: 'Go down until thighs are parallel to the ground.' },
+  { id: 'cal-b8', name: 'Reverse Lunges', muscles: 'Quads, Hamstrings', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '10 reps/leg', desc: 'Step back and lower knee close to the floor.' },
+  { id: 'cal-b9', name: 'Mountain Climbers', muscles: 'Core, Cardio', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '30 sec', desc: 'Drive your knees rapidly toward your chest.' },
+  { id: 'cal-b10', name: 'Dead Bug', muscles: 'Core', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '10 reps/side', desc: 'Press your lower back flat into the floor.' },
+  // Intermediate
+  { id: 'cal-i1', name: 'Diamond Push-ups', muscles: 'Triceps, Chest', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Hands close together forming a diamond shape.' },
+  { id: 'cal-i2', name: 'Wide Push-ups', muscles: 'Outer Chest, Shoulders', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Place hands wider than shoulder width.' },
+  { id: 'cal-i3', name: 'Pike Push-ups', muscles: 'Shoulders, Triceps', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '8 reps', desc: 'Keep hips high in an inverted V shape.' },
+  { id: 'cal-i4', name: 'Dips (using chair)', muscles: 'Triceps, Shoulders', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Lower your hips close to the chair edge.' },
+  { id: 'cal-i5', name: 'Jump Squats', muscles: 'Quads, Cardio', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Explode upwards and land softly.' },
+  { id: 'cal-i6', name: 'Bulgarian Split Squats', muscles: 'Quads, Glutes', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 reps/leg', desc: 'Place rear foot on a chair or bench.' },
+  { id: 'cal-i7', name: 'Plank (45-60 sec)', muscles: 'Core', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '50 sec', desc: 'Maintain a straight line from head to toe.' },
+  { id: 'cal-i8', name: 'Hollow Body Hold', muscles: 'Core', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '30 sec', desc: 'Lift shoulder blades and legs off the floor.' },
+  { id: 'cal-i9', name: 'L-Sit Hold', muscles: 'Core, Triceps', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 sec', desc: 'Support weight on hands and lift legs straight.' },
+  { id: 'cal-i10', name: 'Tuck Planche Lean', muscles: 'Shoulders, Core', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '15 sec', desc: 'Lean forward from plank to place weight on shoulders.' },
+  // Advanced
+  { id: 'cal-a1', name: 'Archer Push-ups', muscles: 'Chest, Shoulders', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '6 reps/side', desc: 'Extend one arm straight to the side as you lower.' },
+  { id: 'cal-a2', name: 'Pseudo Planche Push-ups', muscles: 'Shoulders, Chest', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '8 reps', desc: 'Place hands near waist and lean forward.' },
+  { id: 'cal-a3', name: 'Handstand Wall Hold', muscles: 'Shoulders, Core', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '30 sec', desc: 'Walk feet up wall to hold a handstand position.' },
+  { id: 'cal-a4', name: 'One-Arm Push-up Progression', muscles: 'Chest, Core', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps/side', desc: 'Keep feet wide for balance and push.' },
+  { id: 'cal-a5', name: 'Pistol Squat Progression', muscles: 'Quads, Balance', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps/leg', desc: 'Squat down on one leg while extending other forward.' },
+  { id: 'cal-a6', name: 'Front Lever Tuck Hold', muscles: 'Back, Core', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '12 sec', desc: 'Hang from bar and pull body horizontal with knees tucked.' },
+  { id: 'cal-a7', name: 'Back Lever Tuck Hold', muscles: 'Lower Back, Shoulders', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '12 sec', desc: 'Hang upside down and lower body horizontal with knees tucked.' },
+  { id: 'cal-a8', name: 'Dragon Flag Negatives', muscles: 'Core, Lats', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps', desc: 'Lower your body down as slowly as possible.' },
+  { id: 'cal-a9', name: 'Muscle-Up Progression', muscles: 'Lats, Chest, Triceps', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps', desc: 'Pull up explosively to transition above the bar.' },
+  { id: 'cal-a10', name: 'Ring Dips', muscles: 'Triceps, Chest', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '8 reps', desc: 'Keep rings close to your body and stabilize.' }
+];
+
+export const DEFAULT_HOME_EXERCISES: CustomExercise[] = [
+  // Beginner
+  { id: 'home-b1', name: 'Bodyweight Squats', muscles: 'Quads, Glutes', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '15 reps', desc: 'Keep chest up and heels flat on the floor.' },
+  { id: 'home-b2', name: 'Wall Sit', muscles: 'Quads', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '30 sec', desc: 'Press back flat against wall with knees at 90 degrees.' },
+  { id: 'home-b3', name: 'Glute Bridge', muscles: 'Glutes', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '15 reps', desc: 'Drive heels into the floor and raise hips.' },
+  { id: 'home-b4', name: 'Push-ups', muscles: 'Chest, Arms', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Keep body straight from head to heels.' },
+  { id: 'home-b5', name: 'Incline Push-ups', muscles: 'Lower Chest', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Place hands on an elevated surface like a bed/couch.' },
+  { id: 'home-b6', name: 'Plank (20-30 sec)', muscles: 'Core', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '25 sec', desc: 'Squeeze glutes and core, look slightly forward.' },
+  { id: 'home-b7', name: 'Superman Hold', muscles: 'Lower Back', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '20 sec', desc: 'Lift chest and thighs off floor simultaneously.' },
+  { id: 'home-b8', name: 'Calf Raises', muscles: 'Calves', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '20 reps', desc: 'Pause at the top of each raise for maximum squeeze.' },
+  { id: 'home-b9', name: 'Step-ups (using stair)', muscles: 'Quads, Glutes', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '12 reps/leg', desc: 'Step up onto a step and drive opposite knee up.' },
+  { id: 'home-b10', name: 'High Knees', muscles: 'Cardio, Core', level: 'beginner', enabled: true, isCustom: false, sets: 3, reps: '35 sec', desc: 'Run in place bringing knees to hip height.' },
+  // Intermediate
+  { id: 'home-i1', name: 'Jump Squats', muscles: 'Quads, Cardio', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Lower into squat then jump explosively.' },
+  { id: 'home-i2', name: 'Single-Leg Glute Bridge', muscles: 'Glutes, Hamstrings', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 reps/leg', desc: 'Perform glute bridge with one leg extended.' },
+  { id: 'home-i3', name: 'Decline Push-ups', muscles: 'Upper Chest', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Place feet on elevated surface and hands on floor.' },
+  { id: 'home-i4', name: 'Pike Push-ups', muscles: 'Shoulders', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '8 reps', desc: 'Drive top of head toward the floor between your hands.' },
+  { id: 'home-i5', name: 'Side Plank', muscles: 'Obliques', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '30 sec/side', desc: 'Support weight on elbow and side of foot.' },
+  { id: 'home-i6', name: 'Flutter Kicks', muscles: 'Lower Abs', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '40 sec', desc: 'Keep legs straight and kick them up and down rapidly.' },
+  { id: 'home-i7', name: 'Reverse Lunges', muscles: 'Quads, Glutes', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '12 reps/leg', desc: 'Keep front knee aligned over ankle.' },
+  { id: 'home-i8', name: 'Burpees', muscles: 'Cardio, Full Body', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Drop to floor, push up, jump up explosively.' },
+  { id: 'home-i9', name: 'Bear Crawl', muscles: 'Core, Shoulders', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '30 sec', desc: 'Move forward on hands and toes keeping hips low.' },
+  { id: 'home-i10', name: 'V-Up Crunches', muscles: 'Abs', level: 'intermediate', enabled: true, isCustom: false, sets: 3, reps: '12 reps', desc: 'Reach for your toes while raising torso and legs.' },
+  // Advanced
+  { id: 'home-a1', name: 'Pistol Squat Progression', muscles: 'Quads, Balance', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps/leg', desc: 'Single leg squat down to parallel or below.' },
+  { id: 'home-a2', name: 'Plyometric Push-ups', muscles: 'Chest, Power', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '8 reps', desc: 'Push up explosively so hands leave the floor.' },
+  { id: 'home-a3', name: 'Hindu Push-ups', muscles: 'Shoulders, Chest', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '8 reps', desc: 'Swoop body down and arch back up in a circular motion.' },
+  { id: 'home-a4', name: 'Tuck Jumps', muscles: 'Leg Power, Cardio', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '10 reps', desc: 'Jump up drawing knees high to chest.' },
+  { id: 'home-a5', name: 'Shrimp Squat', muscles: 'Quads, Balance', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps/leg', desc: 'Squat on one leg holding rear foot with hand.' },
+  { id: 'home-a6', name: 'Handstand Wall Hold', muscles: 'Shoulders', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '40 sec', desc: 'Hold vertical posture against wall to build overhead strength.' },
+  { id: 'home-a7', name: 'Dragon Flag Negatives', muscles: 'Core, Full Body', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '6 reps', desc: 'Control the eccentric lowering phase of the dragon flag.' },
+  { id: 'home-a8', name: 'One-Arm Push-up Progression', muscles: 'Chest, Core', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '5 reps/side', desc: 'Perform one-armed push-ups off elevated surface first.' },
+  { id: 'home-a9', name: 'Planche Lean', muscles: 'Shoulders, Wrist', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '15 sec', desc: 'Lean forward in plank keeping arms fully locked.' },
+  { id: 'home-a10', name: 'L-Sit Progression', muscles: 'Core, Lats', level: 'advanced', enabled: true, isCustom: false, sets: 3, reps: '12 sec', desc: 'Support body on floor or books and raise legs off ground.' }
+];
+
+export const generateDailyWorkout = (type: 'calisthenics' | 'home', currentState: AppState): WorkoutState => {
+  const days = currentState.workoutDaysCompleted || 0;
+  let level: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
+  if (days >= 60) level = 'advanced';
+  else if (days >= 30) level = 'intermediate';
+
+  const pool = type === 'calisthenics' 
+    ? (currentState.calisthenicsExercises || DEFAULT_CALISTHENICS_EXERCISES)
+    : (currentState.homeWorkoutExercises || DEFAULT_HOME_EXERCISES);
+
+  // Filter enabled exercises for the current level
+  const levelExercises = pool.filter(ex => ex.level === level && ex.enabled);
+
+  // Pick 5-6 exercises (let's pick min(6, levelExercises.length))
+  // To avoid shuffling on every render/read, we use a pseudo-random rotation based on the days completed
+  // This keeps the workout stable for the day but rotates which ones are selected
+  const selected: CustomExercise[] = [];
+  const poolSize = levelExercises.length;
+  if (poolSize > 0) {
+    const count = Math.min(6, poolSize);
+    for (let i = 0; i < count; i++) {
+      const idx = (days + i) % poolSize;
+      selected.push(levelExercises[idx]);
+    }
+  }
+
+  const title = `${type === 'calisthenics' ? 'Calisthenics' : 'Home'} Workout — Day ${days + 1}`;
+  const focus = level.toUpperCase() + ' LEVEL';
+
+  return {
+    title,
+    focus,
+    started: false,
+    completed: false,
+    exercises: selected.map(ex => ({
+      id: ex.id,
+      name: ex.name,
+      sets: ex.sets,
+      completedSets: 0,
+      reps: ex.reps,
+      muscles: ex.muscles,
+      desc: ex.desc
+    }))
+  };
+};
+
+export const generateGymWorkout = (currentState: AppState): WorkoutState => {
+  const plan = currentState.workoutPlan || 5;
+  const dayOfWeek = new Date().getDay();
+  const routine = WORKOUT_ROUTINES[plan][dayOfWeek];
+  return {
+    title: routine.title,
+    focus: routine.focus,
+    started: false,
+    completed: false,
+    exercises: JSON.parse(JSON.stringify(routine.exercises))
+  };
+};
+
 const defaultAchievements: { [key: number]: UserAchievement } = {};
 ACHIEVEMENT_DEFINITIONS.forEach(def => {
   defaultAchievements[def.id] = { current: 0, target: def.target, xp: def.xp, unlocked: false, category: def.category };
@@ -244,6 +393,10 @@ const defaultState: AppState = {
   sleepHours: '--',
   stepsCount: 0,
   isSyncActive: false,
+  workoutType: null,
+  workoutDaysCompleted: 0,
+  calisthenicsExercises: DEFAULT_CALISTHENICS_EXERCISES,
+  homeWorkoutExercises: DEFAULT_HOME_EXERCISES,
   
   onboardingStep: 1,
   onboardingCompleted: false,
@@ -327,6 +480,20 @@ export interface Toast {
   type: 'success' | 'error' | 'achievement';
 }
 
+export interface LeaderboardPlayer {
+  id?: string;
+  name: string;
+  xp: number;
+  priorityXP?: number;
+  lvl: number;
+  badge: string;
+  plan: 'free' | 'pro' | 'elite';
+  handle: string;
+  avatarUrl: string;
+  isUser: boolean;
+  isRealUser?: boolean;
+}
+
 interface AppContextProps {
   state: AppState;
   toasts: Toast[];
@@ -335,14 +502,19 @@ interface AppContextProps {
   loading: boolean;
   adVisible: boolean;
   adRewarded: boolean;
+  competitors: LeaderboardPlayer[];
+  loadingLeaderboard: boolean;
+  fetchLeaderboardData: () => Promise<void>;
   showToast: (header: string, body: string, type?: 'success' | 'error' | 'achievement') => void;
   dismissToast: (id: string) => void;
   switchView: (view: string) => void;
-  addWater: (amount: number) => void;
-  logGym: (duration: number) => void;
-  addStudyHours: (hours: number) => void;
-  saveSleepInput: (hours: number) => void;
-  simulateSteps: (amount: number, showFeedback?: boolean) => void;
+  selectPreset: (preset: 'shredded' | 'bulk' | 'lean' | 'beginner') => void;
+  startScanSimulation: () => void;
+  addWater: (amount: number, currentState?: AppState) => void;
+  logGym: (duration: number, currentState?: AppState) => void;
+  addStudyHours: (hours: number, currentState?: AppState) => void;
+  saveSleepInput: (hours: number, currentState?: AppState) => void;
+  simulateSteps: (amount: number, showFeedback?: boolean, currentState?: AppState) => void;
   toggleWatchSync: () => void;
   toggleTask: (id: string, completed: boolean) => void;
   addTask: (text: string, category: string) => void;
@@ -369,9 +541,57 @@ interface AppContextProps {
   startNewSeason: () => Promise<void>;
   triggerAd: (isRewarded?: boolean) => void;
   closeAd: () => void;
+  selectWorkoutType: (type: 'calisthenics' | 'gym' | 'home' | null) => void;
+  addCustomExercise: (name: string, muscles: string) => void;
+  removeExercise: (exerciseId: string) => void;
+  toggleExercise: (exerciseId: string) => void;
+  reorderExercises: (exercises: CustomExercise[]) => void;
+  resetExercisesToDefault: () => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
+
+const STATIC_BOTS = [
+  { name: 'mollitommy', xp: 55200, lvl: 150, plan: 'pro', badge: 'badges/ultrasupreme.png', handle: '@mollitommy', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'jefryjerry', xp: 35200, lvl: 120, plan: 'pro', badge: 'badges/master.png', handle: '@jefryjerry', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'kolitrurne', xp: 25200, lvl: 100, plan: 'pro', badge: 'badges/dimond.png', handle: '@kolitrurne', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'Theresa Webb', xp: 18500, lvl: 100, plan: 'free', badge: 'badges/gold.png', handle: '@meraty', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'Kathryn Murphy', xp: 15200, lvl: 50, plan: 'free', badge: 'badges/silver.png', handle: '@faueod', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'Jane Cooper', xp: 12100, lvl: 25, plan: 'free', badge: 'badges/bronze.png', handle: '@jikolim', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'Zyzz', xp: 15000, lvl: 19, badge: 'badges/gold.png', plan: 'elite', handle: '@zyzz', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'David Laid', xp: 16200, lvl: 22, badge: 'badges/gold.png', plan: 'pro', handle: '@davidlaid', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'C-Bum', xp: 13320, lvl: 16, badge: 'badges/silver.png', plan: 'free', handle: '@cbum', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'Sam Sulek', xp: 13100, lvl: 15, badge: 'badges/silver.png', plan: 'free', handle: '@samsulek', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'Arnold', xp: 11800, lvl: 13, badge: 'badges/silver.png', plan: 'free', handle: '@arnold', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'Noel Deyzel', xp: 10400, lvl: 11, badge: 'badges/bronze.png', plan: 'free', handle: '@noeldeyzel', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'Ronnie C', xp: 10150, lvl: 10, badge: 'badges/bronze.png', plan: 'free', handle: '@ronniec', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' },
+  { name: 'Jeff Seid', xp: 8650, lvl: 8, badge: 'badges/bronze.png', plan: 'free', handle: '@jeffseid', avatarUrl: 'avatars/Gemini_Generated_Image_aufw98aufw98aufw_1.png' },
+  { name: 'Alex Eubank', xp: 7400, lvl: 5, badge: 'badges/bronze.png', plan: 'free', handle: '@alexeubank', avatarUrl: 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png' }
+];
+
+export const getRankDetails = (xp: number) => {
+  if (xp < 1500) {
+    return { name: 'Iron I', minXp: 0, maxXp: 1500, badge: 'badges/bronze.png', next: 'Iron II' };
+  } else if (xp < 3000) {
+    return { name: 'Iron II', minXp: 1500, maxXp: 3000, badge: 'badges/bronze.png', next: 'Bronze I' };
+  } else if (xp < 3500) {
+    return { name: 'Bronze I', minXp: 3000, maxXp: 3500, badge: 'badges/bronze.png', next: 'Bronze II' };
+  } else if (xp < 5000) {
+    return { name: 'Bronze II', minXp: 3500, maxXp: 5000, badge: 'badges/bronze.png', next: 'Silver' };
+  } else if (xp < 8000) {
+    return { name: 'Silver', minXp: 5000, maxXp: 8000, badge: 'badges/silver.png', next: 'Gold' };
+  } else if (xp < 16000) {
+    return { name: 'Gold', minXp: 8000, maxXp: 16000, badge: 'badges/gold.png', next: 'Diamond' };
+  } else if (xp < 30000) {
+    return { name: 'Diamond', minXp: 16000, maxXp: 30000, badge: 'badges/dimond.png', next: 'Master' };
+  } else if (xp < 50000) {
+    return { name: 'Master', minXp: 30000, maxXp: 50000, badge: 'badges/master.png', next: 'Supreme' };
+  } else if (xp < 100000) {
+    return { name: 'Supreme', minXp: 50000, maxXp: 100000, badge: 'badges/supreme.png', next: 'Ultra Supreme' };
+  } else {
+    return { name: 'Ultra Supreme', minXp: 100000, maxXp: 100000, badge: 'badges/ultrasupreme.png', next: 'Max Rank' };
+  }
+};
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AppState>(defaultState);
@@ -381,10 +601,168 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [loading, setLoading] = useState(true);
   const [adVisible, setAdVisible] = useState(false);
   const [adRewarded, setAdRewarded] = useState(false);
+  const [competitors, setCompetitors] = useState<LeaderboardPlayer[]>([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   
   const stateRef = useRef(state);
   stateRef.current = state;
   const syncTimeoutRef = useRef<any>(null);
+
+  const fetchLeaderboardData = async () => {
+    setLoadingLeaderboard(true);
+    try {
+      const activeState = stateRef.current;
+      const session = (await supabase.auth.getSession()).data.session;
+      if (session && activeState.isUserSignedIn) {
+        const { data: rows, error } = await supabase
+          .from('profiles')
+          .select('id, username, subscription_plan, user_states(state_json)')
+          .neq('subscription_plan', 'free');
+
+        if (error) throw error;
+
+        const dbCompetitors: LeaderboardPlayer[] = [];
+        rows?.forEach((row: any) => {
+          const uState = row.user_states?.state_json || {};
+          const totalXP = uState.totalXP || 0;
+          
+          let lvl = 10;
+          let badge = 'badges/bronze.png';
+          if (totalXP < 3000) { lvl = 10; badge = 'badges/bronze.png'; }
+          else if (totalXP < 8000) { lvl = 20; badge = 'badges/silver.png'; }
+          else if (totalXP < 16000) { lvl = 30; badge = 'badges/gold.png'; }
+          else if (totalXP < 30000) { lvl = 40; badge = 'badges/dimond.png'; }
+          else if (totalXP < 50000) { lvl = 50; badge = 'badges/master.png'; }
+          else if (totalXP < 100000) { lvl = 60; badge = 'badges/supreme.png'; }
+          else { lvl = 70; badge = 'badges/ultrasupreme.png'; }
+
+          const priorityXP = row.subscription_plan === 'elite' ? totalXP + 1000 : totalXP;
+          const isUser = row.username === activeState.grinderName;
+
+          dbCompetitors.push({
+            id: row.id,
+            name: row.username,
+            xp: totalXP,
+            priorityXP,
+            lvl,
+            badge,
+            plan: row.subscription_plan,
+            handle: `@${row.username.toLowerCase().replace(/\s+/g, '')}`,
+            avatarUrl: uState.avatarUrl || 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png',
+            isUser,
+            isRealUser: true,
+          });
+        });
+
+        const botsList: LeaderboardPlayer[] = STATIC_BOTS.map((bot) => ({
+          name: bot.name,
+          xp: bot.xp,
+          lvl: bot.lvl,
+          badge: bot.badge,
+          plan: bot.plan as any,
+          handle: bot.handle,
+          avatarUrl: bot.avatarUrl,
+          isUser: false,
+        }));
+
+        const userExistsInDb = dbCompetitors.some(p => p.isUser);
+        if (!userExistsInDb && activeState.subscriptionPlan !== 'free') {
+          dbCompetitors.push({
+            name: activeState.grinderName,
+            xp: activeState.totalXP,
+            lvl: Math.floor(activeState.totalXP / 400) + 1,
+            badge: getBadgeSrcLocal(activeState.totalXP),
+            plan: activeState.subscriptionPlan,
+            handle: `@${activeState.grinderName.toLowerCase().replace(/\s+/g, '')}`,
+            avatarUrl: activeState.avatarUrl || 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png',
+            isUser: true,
+          });
+        }
+
+        const combined = [...dbCompetitors, ...botsList];
+        const unique = combined.filter((v, i, a) => a.findIndex(t => (t.handle === v.handle)) === i);
+        
+        unique.sort((a, b) => {
+          const aVal = a.priorityXP !== undefined ? a.priorityXP : a.xp;
+          const bVal = b.priorityXP !== undefined ? b.priorityXP : b.xp;
+          return bVal - aVal;
+        });
+
+        setCompetitors(unique);
+      } else {
+        generateMockOfflineLeaderboard();
+      }
+    } catch (err) {
+      console.error('Failed to load online leaderboard, loading fallback:', err);
+      generateMockOfflineLeaderboard();
+    } finally {
+      setLoadingLeaderboard(false);
+    }
+  };
+
+  const getBadgeSrcLocal = (xp: number) => {
+    if (xp < 3000) return 'badges/bronze.png';
+    if (xp < 8000) return 'badges/silver.png';
+    if (xp < 16000) return 'badges/gold.png';
+    if (xp < 30000) return 'badges/dimond.png';
+    if (xp < 50000) return 'badges/master.png';
+    if (xp < 100000) return 'badges/supreme.png';
+    return 'badges/ultrasupreme.png';
+  };
+
+  const generateMockOfflineLeaderboard = () => {
+    const activeState = stateRef.current;
+    const list: LeaderboardPlayer[] = STATIC_BOTS.map((bot) => ({
+      name: bot.name,
+      xp: bot.xp,
+      lvl: bot.lvl,
+      badge: bot.badge,
+      plan: bot.plan as any,
+      handle: bot.handle,
+      avatarUrl: bot.avatarUrl,
+      isUser: false,
+    }));
+
+    if (activeState.subscriptionPlan !== 'free') {
+      let lvl = 10;
+      let badge = 'badges/bronze.png';
+      if (activeState.totalXP < 3000) { lvl = 10; badge = 'badges/bronze.png'; }
+      else if (activeState.totalXP < 8000) { lvl = 20; badge = 'badges/silver.png'; }
+      else if (activeState.totalXP < 16000) { lvl = 30; badge = 'badges/gold.png'; }
+      else if (activeState.totalXP < 30000) { lvl = 40; badge = 'badges/dimond.png'; }
+      else if (activeState.totalXP < 50000) { lvl = 50; badge = 'badges/master.png'; }
+      else if (activeState.totalXP < 100000) { lvl = 60; badge = 'badges/supreme.png'; }
+      else { lvl = 70; badge = 'badges/ultrasupreme.png'; }
+
+      const priorityXP = activeState.subscriptionPlan === 'elite' ? activeState.totalXP + 1000 : activeState.totalXP;
+      
+      list.push({
+        name: activeState.grinderName,
+        xp: activeState.totalXP,
+        priorityXP,
+        lvl,
+        badge,
+        plan: activeState.subscriptionPlan,
+        handle: `@${activeState.grinderName.toLowerCase().replace(/\s+/g, '')}`,
+        avatarUrl: activeState.avatarUrl || 'avatars/Gemini_Generated_Image_kr2fp6kr2fp6kr2f.png',
+        isUser: true,
+      });
+    }
+
+    list.sort((a, b) => {
+      const aVal = a.priorityXP !== undefined ? a.priorityXP : a.xp;
+      const bVal = b.priorityXP !== undefined ? b.priorityXP : b.xp;
+      return bVal - aVal;
+    });
+
+    setCompetitors(list);
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      fetchLeaderboardData();
+    }
+  }, [state.totalXP, state.subscriptionPlan, state.grinderName, loading]);
 
   // Load local storage on mount
   useEffect(() => {
@@ -505,6 +883,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (states?.[0]?.state_json) {
         const dbState = states[0].state_json as AppState;
         
+        // Seed default values for new fields if they are missing in database state
+        dbState.workoutType = dbState.workoutType !== undefined ? dbState.workoutType : null;
+        dbState.workoutDaysCompleted = dbState.workoutDaysCompleted !== undefined ? dbState.workoutDaysCompleted : 0;
+        dbState.calisthenicsExercises = dbState.calisthenicsExercises !== undefined ? dbState.calisthenicsExercises : DEFAULT_CALISTHENICS_EXERCISES;
+        dbState.homeWorkoutExercises = dbState.homeWorkoutExercises !== undefined ? dbState.homeWorkoutExercises : DEFAULT_HOME_EXERCISES;
+
         // Entitle client plan based on backend profiles settings
         dbState.subscriptionPlan = profile.subscription_plan as any;
         dbState.isUserSignedIn = true;
@@ -563,6 +947,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // Perform rollover check on view changes
     const updated = runDailyChecks(current);
     saveState(updated);
+  };
+
+  const selectPreset = (preset: 'shredded' | 'bulk' | 'lean' | 'beginner') => {
+    const current = { ...stateRef.current };
+    current.selectedPreset = preset;
+    saveState(current);
+  };
+
+  const startScanSimulation = () => {
+    const current = { ...stateRef.current };
+    if (current.isScanning) return;
+
+    current.isScanning = true;
+    current.hasScanned = false;
+    saveState(current);
+
+    showToast('AI Scanner Initializing 🔍', 'Positioning camera and computing grid...', 'success');
+
+    setTimeout(() => {
+      const updated = { ...stateRef.current };
+      updated.isScanning = false;
+      updated.hasScanned = true;
+      
+      // Credit 150 XP
+      const oldXp = updated.totalXP;
+      updated.totalXP += Math.round(150 * updated.expBoostMultiplier);
+      checkLevelAchievements(oldXp, updated);
+      
+      saveState(updated);
+      showToast('Scan Completed 🏆', 'Your physique ratings have been generated. (+150 XP)', 'success');
+    }, 2500);
   };
 
   // Central Habit Checks
@@ -632,11 +1047,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     current.lastDayCheckedDate = todayStr;
 
-    // Check rest day credits
+    // Check rest day credits (only applicable to gym / standard splits)
     const plan = current.workoutPlan || 5;
     const dayOfWeek = new Date().getDay();
     const routine = WORKOUT_ROUTINES[plan][dayOfWeek];
-    const isRestDay = !routine.exercises || routine.exercises.length === 0;
+    const isRestDay = (current.workoutType === 'gym' || !current.workoutType) && (!routine.exercises || routine.exercises.length === 0);
 
     if (isRestDay) {
       current.gymDuration = 45;
@@ -658,20 +1073,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     // Initialize schedule if empty
     if (!current.workout) {
-      current.workout = {
-        title: routine.title,
-        focus: routine.focus,
-        started: false,
-        completed: false,
-        exercises: JSON.parse(JSON.stringify(routine.exercises))
-      };
+      if (current.workoutType === 'calisthenics' || current.workoutType === 'home') {
+        current.workout = generateDailyWorkout(current.workoutType, current);
+      } else {
+        current.workout = generateGymWorkout(current);
+      }
     }
 
     return current;
   };
 
-  const addXP = (amount: number, isAchievement = false) => {
-    const current = { ...stateRef.current };
+  const addXP = (amount: number, isAchievement = false, currentState?: AppState) => {
+    const current = currentState || { ...stateRef.current };
     const oldXp = current.totalXP;
     
     // Apply dynamic exp multiplier
@@ -695,19 +1108,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     }
 
-    saveState(current);
+    if (!currentState) {
+      saveState(current);
+    }
     showToast('XP Gained', `+${finalAmount} XP earned${current.expBoostMultiplier > 1 ? ` (${current.expBoostMultiplier}x boost)` : ''}!`);
   };
 
   // Verify rank progression boundaries
   const getRankName = (xp: number) => {
-    if (xp < 3000) return 'Bronze';
-    if (xp < 8000) return 'Silver';
-    if (xp < 16000) return 'Gold';
-    if (xp < 30000) return 'Diamond';
-    if (xp < 50000) return 'Master';
-    if (xp < 100000) return 'Supreme';
-    return 'Ultra Supreme';
+    return getRankDetails(xp).name;
   };
 
   const checkLevelAchievements = (oldXp: number, current: AppState) => {
@@ -826,8 +1235,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Incremental log handlers
-  const addWater = (amount: number) => {
-    const current = { ...stateRef.current };
+  const addWater = (amount: number, currentState?: AppState) => {
+    const current = currentState || { ...stateRef.current };
     if (current.waterCount < 8) {
       current.waterCount = Math.min(8, current.waterCount + amount);
       current.totalWaterCount += amount;
@@ -847,21 +1256,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const task = current.tasks.find(t => t.id === 'water-task');
         if (task && !task.completed) {
           task.completed = true;
-          addXP(task.xp, true);
+          addXP(task.xp, true, current);
         }
         if (current.waterStreak === 0) current.waterStreak = 1;
       }
 
       // Special checks for perfect routine before noon
       checkCompoundGoalsToday(current);
-      addXP(10);
+      addXP(10, false, current);
+
+      if (!currentState) {
+        saveState(current);
+      }
     } else {
       showToast('Hydration Met', 'You have hit 8/8 glasses today!', 'success');
     }
   };
 
-  const logGym = (duration: number) => {
-    const current = { ...stateRef.current };
+  const logGym = (duration: number, currentState?: AppState) => {
+    const current = currentState || { ...stateRef.current };
     current.gymDuration = Math.min(45, current.gymDuration + duration);
     
     const hr = new Date().getHours();
@@ -888,17 +1301,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const task = current.tasks.find(t => t.id === 'workout-task');
       if (task && !task.completed) {
         task.completed = true;
-        addXP(task.xp, true);
+        addXP(task.xp, true, current);
       }
     }
 
     checkCompoundGoalsToday(current);
-    addXP(120);
-    saveState(current);
+    addXP(120, false, current);
+
+    if (!currentState) {
+      saveState(current);
+    }
   };
 
-  const addStudyHours = (hours: number) => {
-    const current = { ...stateRef.current };
+  const addStudyHours = (hours: number, currentState?: AppState) => {
+    const current = currentState || { ...stateRef.current };
     if (current.studyHours >= 4.0) {
       showToast('Study Completed', 'You have hit 4.0/4.0 study hours today!', 'success');
       return;
@@ -922,18 +1338,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const task = current.tasks.find(t => t.id === 'study-task');
       if (task && !task.completed) {
         task.completed = true;
-        addXP(task.xp, true);
+        addXP(task.xp, true, current);
       }
       if (current.studyStreak === 0) current.studyStreak = 1;
     }
 
     checkCompoundGoalsToday(current);
-    addXP(Math.round(hours * 50));
-    saveState(current);
+    addXP(Math.round(hours * 50), false, current);
+
+    if (!currentState) {
+      saveState(current);
+    }
   };
 
-  const saveSleepInput = (hours: number) => {
-    const current = { ...stateRef.current };
+  const saveSleepInput = (hours: number, currentState?: AppState) => {
+    const current = currentState || { ...stateRef.current };
     current.sleepHours = hours;
     current.sleepLogsCount++;
 
@@ -942,7 +1361,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const task = current.tasks.find(t => t.id === 'sleep-task');
       if (task && !task.completed) {
         task.completed = true;
-        addXP(task.xp, true);
+        addXP(task.xp, true, current);
       }
       if (current.sleepStreak === 0) current.sleepStreak = 1;
     }
@@ -953,12 +1372,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     checkCompoundGoalsToday(current);
-    addXP(50);
-    saveState(current);
+    addXP(50, false, current);
+
+    if (!currentState) {
+      saveState(current);
+    }
   };
 
-  const simulateSteps = (amount: number, showFeedback = true) => {
-    const current = { ...stateRef.current };
+  const simulateSteps = (amount: number, showFeedback = true, currentState?: AppState) => {
+    const current = currentState || { ...stateRef.current };
     const oldSteps = current.stepsCount;
     current.stepsCount += amount;
 
@@ -966,7 +1388,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const newThousands = Math.floor(current.stepsCount / 1000);
     if (newThousands > oldThousands) {
       const gXp = (newThousands - oldThousands) * 10;
-      addXP(gXp);
+      addXP(gXp, false, current);
       if (showFeedback) showToast('Steps Tracked', `Logged ${amount.toLocaleString()} steps! (+${gXp} XP)`);
     } else if (showFeedback) {
       showToast('Steps Logged', `Logged +${amount} steps.`);
@@ -979,7 +1401,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       current.cardioCount += (newCardios - oldCardios);
     }
 
-    saveState(current);
+    if (!currentState) {
+      saveState(current);
+    }
   };
 
   const toggleWatchSync = () => {
@@ -1000,7 +1424,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     task.completed = completed;
     if (completed) {
-      addXP(task.xp);
+      addXP(task.xp, false, current);
     } else {
       current.totalXP = Math.max(0, current.totalXP - task.xp);
       showToast('Task Unchecked', `-${task.xp} XP removed.`, 'error');
@@ -1066,10 +1490,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     if (ex.completedSets === setNum) {
       ex.completedSets = setNum - 1;
-      addXP(-15);
+      addXP(-15, false, current);
     } else {
       ex.completedSets = setNum;
-      addXP(15);
+      addXP(15, false, current);
     }
     saveState(current);
   };
@@ -1080,10 +1504,179 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     current.workout.started = false;
     current.workout.completed = true;
+
+    // Increment completed workouts count
+    const oldDays = current.workoutDaysCompleted || 0;
+    const newDays = oldDays + 1;
+    current.workoutDaysCompleted = newDays;
+
+    // Progression level change checks
+    const oldLevel = oldDays >= 60 ? 'advanced' : oldDays >= 30 ? 'intermediate' : 'beginner';
+    const newLevel = newDays >= 60 ? 'advanced' : newDays >= 30 ? 'intermediate' : 'beginner';
     
-    logGym(45);
-    addXP(150);
+    if (oldLevel !== newLevel) {
+      showToast('Workout Split Promoted! 🚀', `You have advanced to the ${newLevel.toUpperCase()} workout split level!`);
+    }
+    
+    logGym(45, current);
+    addXP(150, false, current);
+    saveState(current);
     showToast('Workout Complete! 🏆', 'Smashed all target muscle exercises! (+150 XP)');
+  };
+
+  const selectWorkoutType = (type: 'calisthenics' | 'gym' | 'home' | null) => {
+    const current = { ...stateRef.current };
+    current.workoutType = type;
+    current.workout = null; // force regenerate
+    
+    // Regenerate immediately
+    if (type === 'calisthenics' || type === 'home') {
+      current.workout = generateDailyWorkout(type, current);
+    } else if (type === 'gym') {
+      current.workout = generateGymWorkout(current);
+    }
+    
+    saveState(current);
+    showToast('Split Choice Updated 🏋️', `Workout plan changed to ${type ? type.toUpperCase() : 'NONE'}.`);
+  };
+
+  const addCustomExercise = (name: string, muscles: string) => {
+    const current = { ...stateRef.current };
+    const type = current.workoutType;
+    if (type !== 'calisthenics' && type !== 'home') return;
+
+    const days = current.workoutDaysCompleted || 0;
+    let level: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
+    if (days >= 60) level = 'advanced';
+    else if (days >= 30) level = 'intermediate';
+
+    const newEx: CustomExercise = {
+      id: 'custom-ex-' + Date.now(),
+      name,
+      muscles,
+      level,
+      enabled: true,
+      isCustom: true,
+      sets: 3,
+      reps: '10 reps',
+      desc: 'Custom user added exercise.'
+    };
+
+    if (type === 'calisthenics') {
+      current.calisthenicsExercises = [...(current.calisthenicsExercises || DEFAULT_CALISTHENICS_EXERCISES), newEx];
+    } else {
+      current.homeWorkoutExercises = [...(current.homeWorkoutExercises || DEFAULT_HOME_EXERCISES), newEx];
+    }
+
+    // Add directly to today's active exercises list so it appears immediately!
+    if (current.workout && current.workout.exercises) {
+      current.workout.exercises = [
+        ...current.workout.exercises,
+        {
+          id: newEx.id,
+          name: newEx.name,
+          sets: newEx.sets,
+          completedSets: 0,
+          reps: newEx.reps,
+          muscles: newEx.muscles,
+          desc: newEx.desc
+        }
+      ];
+    }
+
+    saveState(current);
+    showToast('Exercise Added 🏋️', `"${name}" added to your current pool.`);
+  };
+
+  const removeExercise = (exerciseId: string) => {
+    const current = { ...stateRef.current };
+    const type = current.workoutType;
+    if (type !== 'calisthenics' && type !== 'home') return;
+
+    if (type === 'calisthenics') {
+      current.calisthenicsExercises = (current.calisthenicsExercises || DEFAULT_CALISTHENICS_EXERCISES).filter(ex => ex.id !== exerciseId);
+    } else {
+      current.homeWorkoutExercises = (current.homeWorkoutExercises || DEFAULT_HOME_EXERCISES).filter(ex => ex.id !== exerciseId);
+    }
+
+    // Also remove from active workout today if it exists
+    if (current.workout && current.workout.exercises) {
+      current.workout.exercises = current.workout.exercises.filter(ex => ex.id !== exerciseId);
+    }
+
+    saveState(current);
+    showToast('Exercise Removed 🗑️', 'Exercise has been removed from your plan.');
+  };
+
+  const toggleExercise = (exerciseId: string) => {
+    const current = { ...stateRef.current };
+    const type = current.workoutType;
+    if (type !== 'calisthenics' && type !== 'home') return;
+
+    if (type === 'calisthenics') {
+      current.calisthenicsExercises = (current.calisthenicsExercises || DEFAULT_CALISTHENICS_EXERCISES).map(ex => 
+        ex.id === exerciseId ? { ...ex, enabled: !ex.enabled } : ex
+      );
+    } else {
+      current.homeWorkoutExercises = (current.homeWorkoutExercises || DEFAULT_HOME_EXERCISES).map(ex => 
+        ex.id === exerciseId ? { ...ex, enabled: !ex.enabled } : ex
+      );
+    }
+
+    saveState(current);
+  };
+
+  const reorderExercises = (exercises: CustomExercise[]) => {
+    const current = { ...stateRef.current };
+    const type = current.workoutType;
+    if (type !== 'calisthenics' && type !== 'home') return;
+
+    // Filter out the exercises of other levels to merge them correctly
+    const days = current.workoutDaysCompleted || 0;
+    let level: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
+    if (days >= 60) level = 'advanced';
+    else if (days >= 30) level = 'intermediate';
+
+    if (type === 'calisthenics') {
+      const otherLevels = (current.calisthenicsExercises || DEFAULT_CALISTHENICS_EXERCISES).filter(ex => ex.level !== level);
+      current.calisthenicsExercises = [...exercises, ...otherLevels];
+    } else {
+      const otherLevels = (current.homeWorkoutExercises || DEFAULT_HOME_EXERCISES).filter(ex => ex.level !== level);
+      current.homeWorkoutExercises = [...exercises, ...otherLevels];
+    }
+
+    // Also update today's active workout list sequence to match the new order!
+    if (current.workout && current.workout.exercises) {
+      const sorted = [];
+      for (const ex of exercises) {
+        const found = current.workout.exercises.find(e => e.id === ex.id);
+        if (found) sorted.push(found);
+      }
+      // If there are any exercises in today's list not in the new order, append them
+      for (const ex of current.workout.exercises) {
+        if (!sorted.some(e => e.id === ex.id)) sorted.push(ex);
+      }
+      current.workout.exercises = sorted;
+    }
+
+    saveState(current);
+  };
+
+  const resetExercisesToDefault = () => {
+    const current = { ...stateRef.current };
+    const type = current.workoutType;
+    if (type !== 'calisthenics' && type !== 'home') return;
+
+    if (type === 'calisthenics') {
+      current.calisthenicsExercises = JSON.parse(JSON.stringify(DEFAULT_CALISTHENICS_EXERCISES));
+    } else {
+      current.homeWorkoutExercises = JSON.parse(JSON.stringify(DEFAULT_HOME_EXERCISES));
+    }
+
+    current.workout = generateDailyWorkout(type, current);
+
+    saveState(current);
+    showToast('Restored Defaults 🔄', 'All exercises reset to system defaults.');
   };
 
   // Compound achievements triggers
@@ -1392,9 +1985,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       loading,
       adVisible,
       adRewarded,
+      competitors,
+      loadingLeaderboard,
+      fetchLeaderboardData,
       showToast,
       dismissToast,
       switchView,
+      selectPreset,
+      startScanSimulation,
       addWater,
       logGym,
       addStudyHours,
@@ -1426,6 +2024,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       startNewSeason,
       triggerAd,
       closeAd,
+      selectWorkoutType,
+      addCustomExercise,
+      removeExercise,
+      toggleExercise,
+      reorderExercises,
+      resetExercisesToDefault,
     }}>
       {children}
     </AppContext.Provider>

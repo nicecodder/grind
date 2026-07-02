@@ -2,7 +2,7 @@
   "expo": {
     "name": "mobile-app",
     "slug": "mobile-app",
-    "version": "1.0.0",
+    "version": "56.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -10,6 +10,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.grind.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

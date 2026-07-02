@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, TextInput, Modal } from 'react-native';
-import { useApp } from '../context/AppContext';
+import { useApp, getRankDetails } from '../context/AppContext';
 import { Theme } from '../components/Theme';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { ProgressBar } from '../components/ProgressBar';
 import { getAsset } from '../constants/assetsMap';
+import Svg, { Path, Circle } from 'react-native-svg';
 
 export const DashboardScreen: React.FC = () => {
   const {
@@ -19,10 +20,21 @@ export const DashboardScreen: React.FC = () => {
     addTask,
     deleteTask,
     switchView,
+    competitors,
   } = useApp();
 
-  const isRestDay = !state.workout || !state.workout.exercises || state.workout.exercises.length === 0;
+  const isRestDay = (state.workoutType === 'gym' || !state.workoutType) && (!state.workout || !state.workout.exercises || state.workout.exercises.length === 0);
   const gymStatus = isRestDay ? 'Rest Day' : 'Active';
+
+  let splitName = 'WorkoutSplit';
+  let splitEmoji = '🏋️';
+  if (state.workoutType === 'calisthenics') {
+    splitName = 'Calisthenics';
+    splitEmoji = '🤸';
+  } else if (state.workoutType === 'home') {
+    splitName = 'Home Workout';
+    splitEmoji = '🏠';
+  }
 
   const [sleepModalVisible, setSleepModalVisible] = useState(false);
   const [sleepVal, setSleepVal] = useState(8.0);
@@ -46,36 +58,35 @@ export const DashboardScreen: React.FC = () => {
   };
 
   const getBadgeSrc = (xp: number) => {
-    if (xp < 3000) return 'badges/bronze.png';
-    if (xp < 8000) return 'badges/silver.png';
-    if (xp < 16000) return 'badges/gold.png';
-    if (xp < 30000) return 'badges/dimond.png';
-    if (xp < 50000) return 'badges/master.png';
-    if (xp < 100000) return 'badges/supreme.png';
-    return 'badges/ultrasupreme.png';
+    return getRankDetails(xp).badge;
   };
 
   const getRankName = (xp: number) => {
-    if (xp < 3000) return 'BRONZE 1 GRINDER';
-    if (xp < 8000) return 'SILVER GRINDER';
-    if (xp < 16000) return 'GOLD GRINDER';
-    if (xp < 30000) return 'DIAMOND GRINDER';
-    if (xp < 50000) return 'MASTER GRINDER';
-    if (xp < 100000) return 'SUPREME GRINDER';
-    return 'ULTRA SUPREME GRINDER';
+    return getRankDetails(xp).name.toUpperCase() + ' GRINDER';
   };
 
-  const getNextRankXp = (xp: number) => {
-    if (xp < 3000) return 3000;
-    if (xp < 8000) return 8000;
-    if (xp < 16000) return 16000;
-    if (xp < 30000) return 30000;
-    if (xp < 50000) return 50000;
-    return 100000;
+  const currentRankDetails = getRankDetails(state.totalXP);
+  const nextRankTarget = currentRankDetails.maxXp;
+  const xpRange = currentRankDetails.maxXp - currentRankDetails.minXp;
+  const xpPercent = xpRange > 0 ? Math.min(1, Math.max(0, (state.totalXP - currentRankDetails.minXp) / xpRange)) : 1;
+
+  const getWeekdayCompletionStatus = () => {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const currentDay = new Date().getDay();
+    const todayIndex = currentDay === 0 ? 6 : currentDay - 1;
+
+    return days.map((day, index) => {
+      let isCompleted = false;
+      if (index < todayIndex) {
+        isCompleted = (todayIndex - index) < state.workoutStreak;
+      } else if (index === todayIndex) {
+        isCompleted = state.gymCompletedToday;
+      }
+      return { day, isCompleted };
+    });
   };
 
-  const nextRankTarget = getNextRankXp(state.totalXP);
-  const xpPercent = Math.min(1, state.totalXP / nextRankTarget);
+  const weekdayStatus = getWeekdayCompletionStatus();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -94,32 +105,60 @@ export const DashboardScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Streak Fire Card */}
+      {/* Unified Streak & XP Progress Card */}
       <TouchableOpacity 
         activeOpacity={0.9}
         onPress={() => switchView('profile')}
-        style={styles.streakTouch}
+        style={styles.unifiedCardTouch}
       >
-        <Card variant="orange" style={styles.streakCard}>
-          <Text style={styles.fireEmoji}>🔥</Text>
-          <Text style={styles.streakText}>{state.streak} DAY ACTIVE STREAK</Text>
+        <Card style={styles.unifiedCard}>
+          <View style={styles.unifiedRow}>
+            {/* Left Square Column (Streak Block) */}
+            <View style={styles.streakSquare}>
+              <View style={styles.fireGlowContainer}>
+                <Svg viewBox="0 0 24 24" width="38" height="38" color={Theme.colors.accentOrange}>
+                  <Path d="M12 2C11.5 4 10 5.5 8.5 7C7 8.5 6 10.5 6 13c0 3.3 2.7 6 6 6s6-2.7 6-6c0-2.5-1-4.5-2.5-6C14 5.5 12.5 4 12 2z" fill="currentColor"/>
+                  <Path d="M12 7c-.3 1-.8 1.8-1.5 2.5C9.8 10.2 9 11.5 9 13c0 1.7 1.3 3 3 3s3-1.3 3-3c0-1.5-.8-2.8-1.5-3.5C12.8 8.8 12.3 8 12 7z" fill="#fff"/>
+                </Svg>
+              </View>
+              <Text style={styles.streakDaysText}>{state.workoutStreak} days</Text>
+              <Text style={styles.streakDaysSub}>Active streak</Text>
+            </View>
+
+            {/* Right Column (XP Progress & Weekday Tracker) */}
+            <View style={styles.trackerColumn}>
+              {/* XP Progress Label */}
+              <View style={styles.xpRow}>
+                <Text style={styles.xpTextVal}>
+                  {state.totalXP.toLocaleString()}
+                  <Text style={styles.xpTextTarget}> / {nextRankTarget.toLocaleString()}</Text>
+                </Text>
+              </View>
+
+              {/* Glowing XP Progress Bar */}
+              <View style={styles.progressBarBg}>
+                <View style={[styles.progressBarFill, { width: `${xpPercent * 100}%` }]} />
+              </View>
+
+              {/* Weekday Tracker Pill */}
+              <View style={styles.weekdayTracker}>
+                {weekdayStatus.map((item, idx) => (
+                  <View key={idx} style={styles.weekdayCol}>
+                    {item.isCompleted ? (
+                      <View style={styles.circleChecked}>
+                        <Text style={styles.checkIconText}>✓</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.circleEmpty} />
+                    )}
+                    <Text style={styles.weekdayLabel}>{item.day}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
         </Card>
       </TouchableOpacity>
-
-      {/* Level / Rank summary Card */}
-      <Card style={styles.rankCard}>
-        <View style={styles.rankHeader}>
-          <Text style={styles.rankTitle}>{getRankName(state.totalXP)}</Text>
-          <Text style={styles.rankValue}>{state.totalXP.toLocaleString()} XP</Text>
-        </View>
-        <ProgressBar progress={xpPercent} category="rank" style={styles.rankBar} />
-        <Text style={styles.rankSub}>
-          {state.totalXP >= 100000 
-            ? 'MAX RANK ATTAINED' 
-            : `${(nextRankTarget - state.totalXP).toLocaleString()} XP to next rank`
-          }
-        </Text>
-      </Card>
 
       {/* Habits Grid */}
       <Text style={styles.sectionTitle}>DAILY HABITS</Text>
@@ -148,16 +187,12 @@ export const DashboardScreen: React.FC = () => {
         <TouchableOpacity 
           activeOpacity={0.9} 
           style={styles.gridCol}
-          onPress={() => {
-            if (gymStatus !== 'Rest Day' && state.gymDuration < 45) {
-              switchView('workout');
-            }
-          }}
+          onPress={() => switchView('workout')}
         >
           <Card variant={state.gymCompletedToday ? 'green' : 'default'} style={styles.habitCard}>
             <View style={styles.habitHead}>
-              <Text style={styles.habitName}>WorkoutSplit</Text>
-              <Text style={styles.arrow}>🏋️</Text>
+              <Text style={styles.habitName}>{splitName}</Text>
+              <Text style={styles.arrow}>{splitEmoji}</Text>
             </View>
             <ProgressBar progress={state.gymDuration / 45} category="gym" />
             <Text style={styles.habitVal}>
@@ -291,6 +326,48 @@ export const DashboardScreen: React.FC = () => {
         </View>
       </Card>
 
+      {/* Leaderboard Card */}
+      <Text style={styles.sectionTitle}>XP LEADERBOARD</Text>
+      <TouchableOpacity 
+        activeOpacity={0.9} 
+        onPress={() => switchView('leaderboard')}
+        style={styles.leaderboardTouch}
+      >
+        <Card style={styles.leaderboardCard}>
+          <View style={styles.leaderboardHeader}>
+            <View style={styles.leaderboardHeaderLeft}>
+              <Text style={styles.trophyIcon}>🏆</Text>
+              <Text style={styles.leaderboardTitle}>XP Leaderboard</Text>
+            </View>
+            <View style={styles.arenaTag}>
+              <Text style={styles.arenaTagText}>WEEKLY ARENA</Text>
+            </View>
+          </View>
+          <View style={styles.leaderboardContent}>
+            {competitors && competitors.length > 0 ? (
+              <View style={styles.compactList}>
+                {competitors.slice(0, 10).map((player, idx) => (
+                  <View key={player.handle || idx.toString()} style={styles.compactRow}>
+                    <View style={styles.compactRowLeft}>
+                      <Text style={styles.compactRank}>#{idx + 1}</Text>
+                      <Image source={getAsset(player.avatarUrl)} style={styles.compactAvatar} />
+                      <Text style={styles.compactName} numberOfLines={1}>{player.name}</Text>
+                      {player.plan === 'elite' && <Text style={styles.compactEliteTag}>ELITE</Text>}
+                      {player.plan === 'pro' && <Text style={styles.compactProTag}>PRO</Text>}
+                    </View>
+                    <Text style={styles.compactXp}>{player.xp.toLocaleString()} XP</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.leaderboardText}>
+                Click to view global arena rankings, compare disciplines, and claim your place on the podium!
+              </Text>
+            )}
+          </View>
+        </Card>
+      </TouchableOpacity>
+
       {/* Sleep Input Modal */}
       <Modal visible={sleepModalVisible} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
@@ -397,53 +474,126 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'contain',
   },
-  streakTouch: {
+  unifiedCardTouch: {
     width: '100%',
-    marginBottom: 16,
-  },
-  streakCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    height: 52,
-  },
-  fireEmoji: {
-    fontSize: 20,
-  },
-  streakText: {
-    color: Theme.colors.accentOrange,
-    fontSize: 14,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  rankCard: {
     marginBottom: 24,
   },
-  rankHeader: {
+  unifiedCard: {
+    backgroundColor: '#16181c',
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 16,
+  },
+  unifiedRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 16,
+  },
+  streakSquare: {
+    width: 104,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'center',
+    paddingVertical: 14,
   },
-  rankTitle: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 13,
-    letterSpacing: 0.2,
-  },
-  rankValue: {
-    color: Theme.colors.accentYellow,
-    fontWeight: '900',
-    fontSize: 13,
-  },
-  rankBar: {
+  fireGlowContainer: {
+    shadowColor: Theme.colors.accentOrange,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+    elevation: 5,
     marginBottom: 8,
   },
-  rankSub: {
-    fontSize: 10.5,
+  streakDaysText: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#fff',
+    marginBottom: 2,
+  },
+  streakDaysSub: {
+    fontSize: 9.5,
+    fontWeight: '700',
     color: Theme.colors.textSecondary,
+  },
+  trackerColumn: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+  },
+  xpRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  xpTextVal: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#fff',
+  },
+  xpTextTarget: {
+    fontSize: 12,
     fontWeight: '600',
+    color: Theme.colors.textSecondary,
+  },
+  progressBarBg: {
+    height: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 5,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 5,
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  weekdayTracker: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
+  },
+  weekdayCol: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  circleChecked: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Theme.colors.accentOrange,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkIconText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  circleEmpty: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
+  },
+  weekdayLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Theme.colors.textSecondary,
   },
   sectionTitle: {
     fontSize: 12,
@@ -723,6 +873,119 @@ const styles = StyleSheet.create({
   },
   modalBtn: {
     flex: 1,
+  },
+  fireStreakImg: {
+    width: 24,
+    height: 24,
+  },
+  leaderboardTouch: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  leaderboardCard: {
+    padding: 16,
+  },
+  leaderboardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  leaderboardHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  trophyIcon: {
+    fontSize: 16,
+  },
+  leaderboardTitle: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 14,
+  },
+  arenaTag: {
+    backgroundColor: 'rgba(0, 230, 118, 0.08)',
+    borderColor: 'rgba(0, 230, 118, 0.2)',
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 4,
+  },
+  arenaTagText: {
+    color: Theme.colors.accentGreen,
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  leaderboardContent: {
+    marginTop: 6,
+  },
+  leaderboardText: {
+    color: Theme.colors.textSecondary,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  compactList: {
+    gap: 4,
+  },
+  compactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  compactRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+  },
+  compactRank: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: Theme.colors.textSecondary,
+    width: 28,
+  },
+  compactAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  compactName: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#fff',
+    maxWidth: 120,
+  },
+  compactEliteTag: {
+    fontSize: 7.5,
+    fontWeight: '900',
+    color: '#000',
+    backgroundColor: Theme.colors.accentYellow,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 2.5,
+    overflow: 'hidden',
+  },
+  compactProTag: {
+    fontSize: 7.5,
+    fontWeight: '900',
+    color: '#fff',
+    backgroundColor: Theme.colors.accentBlue,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 2.5,
+    overflow: 'hidden',
+  },
+  compactXp: {
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: Theme.colors.accentYellow,
   },
 });
 export default DashboardScreen;

@@ -10,6 +10,12 @@ export const ASSET_MAP: { [key: string]: any } = {
   'badges/supreme.png': require('../assets/badges/supreme.png'),
   'badges/ultrasupreme.png': require('../assets/badges/ultrasupreme.png'),
   
+  'Icons/fire_emoji.png': require('../assets/Icons/fire_emoji.png'),
+  'Icons/nav_home.png': require('../assets/Icons/nav_home.png'),
+  'Icons/nav_dumbbell.png': require('../assets/Icons/nav_dumbbell.png'),
+  'Icons/nav_scan.png': require('../assets/Icons/nav_scan.png'),
+  'Icons/nav_profile.png': require('../assets/Icons/nav_profile.png'),
+  
   // Achievements
   'achivement/dumble.png': require('../assets/achivement/dumble.png'),
   'achivement/lifting.png': require('../assets/achivement/lifting.png'),
